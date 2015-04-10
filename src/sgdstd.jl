@@ -2,25 +2,20 @@
 
 function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
                                 θ::DenseVector{T},
-                                X::DenseMatrix{T},
-                                y::AbstractVector,
-                                order::AbstractVector,
+                                stream::SampleStream,
                                 lrate,
                                 cbctrl,
                                 callback)
-
-    # check dimensions
-    n = size(X, 2)
-    length(y) == n ||
-        throw(DimensionMismatch("Inconsistent input diimensions."))
 
     # preparing storage
     g = similar(θ)
     tloss = 0.0
 
     # main loop
-    for (t, i) in enumerate(order)
-        v = loss!(g, θ, view(X, :, i), y[i])
+    t = 0
+    for s in stream
+        t += 1
+        v = loss!(g, θ, s...)
         λ = lrate(t)
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
         tloss += v
@@ -38,12 +33,10 @@ end
 
 function sgd{T<:FloatingPoint}(loss!::ScalarLoss,
                                θ::DenseVector{T},
-                               X::DenseMatrix{T},
-                               y::AbstractVector;
-                               order=1:size(X,2),
+                               stream::SampleStream;
                                lrate=t->1.0 / t,
                                cbctrl=NoCallback(),
                                callback=simple_trace)
 
-    sgd!(loss!, copy(θ), X, y, order, lrate, cbctrl, callback)
+    sgd!(loss!, copy(θ), stream, lrate, cbctrl, callback)
 end

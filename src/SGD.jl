@@ -2,35 +2,38 @@ module SGD
 
 using ArrayViews
 
-import Base: call
+import Base: start, next, done, call
 import Base.LinAlg: axpy!
 
 export
 
-    # abstract types
+    # streams.jl
+    SampleStream,
+    SampleSeq,
+
+    # loss.jl
     Loss,
     ScalarLoss,
     MultinomialLoss,
 
-    # specific loss functors
     SqrLoss,
     sqrloss!,
 
-    # solver
-    sgd!,
-    sgd,
-
-    # utilities
+    # utils.jl
     SGDRecord,
     CallbackControl,
     NoCallback,
     ByInterval,
 
     simple_trace,
-    gtcompare_trace
+    gtcompare_trace,
 
+    # sgd_std.jl
+    sgd!,
+    sgd
 
 include("common.jl")
+include("streams.jl")
 include("loss.jl")
 include("callback.jl")
 
