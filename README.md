@@ -52,6 +52,25 @@ From this example, we can see that an SGD optimization procedure involves multip
 
 ---
 
+## Loss Functions
+
+This package supports the following loss functions, and allows users to provide customized loss functions following a consistent interface.
+
+- [x] Squared loss
+
+  $$\frac{1}{2} (\theta^T x - y)^2$$
+
+- [x] Hinge loss
+
+  $$\max(1 - y \cdot \theta^T x)$$
+
+- [x] Logistic loss
+
+  $$\log(1 + \exp(- y \cdot \theta^T x))$$
+
+
+---
+
 ## Algorithms
 
 This package provides the following algorithms.
