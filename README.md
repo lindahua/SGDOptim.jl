@@ -18,11 +18,12 @@ Here is an example that illustrates how this package can be used to solve a regr
 
 # let d be the sample dimension
 #     n be the number of samples
+#     σ be the standard deviation of the measurement noise
 
 # prepare experimental data
-d = length(θ_g)
-X = randn(d, n)
-y = vec(θ_g'X) + σ * randn(n)
+θ_g = rand(d)                    # underlying parameter
+X   = rand(d, n)                 # features
+y   = vec(θ_g'X) + σ * randn(n)  # responses
 
 # initialize solution
 θ_0 = zeros(d)
@@ -30,7 +31,7 @@ y = vec(θ_g'X) + σ * randn(n)
 # optimize
 θ = sgd(sqrloss!, θ_0,
     minibatch_seq(X, y, 10),       # a stream of mini-batches of size 10
-    lrate = t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
+    lrate=t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
     cbctrl=ByInterval(5),     # invoke the callback every 5 iteration
     callback=simple_trace     # callback: print the optimization trace when invoked
 )
