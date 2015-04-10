@@ -1,6 +1,9 @@
 module SGD
 
+using ArrayViews
+
 import Base: call
+import Base.LinAlg: axpy!
 
 export
 
@@ -11,8 +14,23 @@ export
 
     # specific loss functors
     SqrLoss,
-    sqrloss!
+    sqrloss!,
 
+    # solver
+    sgd!,
+    sgd,
+
+    # utilities
+    CallbackControl,
+    NoCallback,
+    ByInterval,
+
+    simple_trace
+
+
+include("common.jl")
+include("utils.jl")
 include("loss.jl")
+include("sgdstd.jl")
 
 end # module

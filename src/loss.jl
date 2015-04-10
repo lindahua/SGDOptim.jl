@@ -9,7 +9,8 @@ abstract MultinomialLoss <: Loss
 
 # squared loss
 
-type SqrLoss end
+type SqrLoss <: ScalarLoss
+end
 
 function call(::SqrLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
     r = dot(θ, x) - y
