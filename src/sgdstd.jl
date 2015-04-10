@@ -16,7 +16,7 @@ function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
     for s in stream
         t += 1
         v = loss!(g, θ, s...)
-        λ = lrate(t)
+        λ = convert(T, lrate(t))::T
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
         tloss += v
 
