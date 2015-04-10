@@ -4,20 +4,15 @@ import Base: call
 
 export
 
-    # types
+    # abstract types
     Loss,
     ScalarLoss,
     MultinomialLoss,
 
-    Predictor,
-    LinearPredictor,
+    # specific loss functors
+    SqrLoss,
+    sqrloss!
 
-    # methods
-    paramdim,
-    sampledim
-
-
-include("common.jl")
-include("predictors.jl")
+include("loss.jl")
 
 end # module

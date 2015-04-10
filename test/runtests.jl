@@ -1,5 +1,5 @@
 tests = [
-    "predictors"
+    "loss"
 ]
 
 
