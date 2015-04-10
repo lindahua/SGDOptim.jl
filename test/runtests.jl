@@ -1,5 +1,10 @@
-using SGD
-using Base.Test
+tests = [
+    "predictors"
+]
 
-# write your own tests here
-@test 1 == 1
+
+for t in tests
+    tfile = string(t, ".jl")
+    println("  * $tfile ...")
+    include(tfile)
+end
