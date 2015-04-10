@@ -2,7 +2,7 @@
 
 A Julia package for Gradient Descent and Stochastic Gradient Descent (SGD)
 
-[![Build Status](https://travis-ci.org/lindahua/SGD.jl.svg?branch=master)](https://travis-ci.org/lindahua/SGD.jl)
+[![Build Status](https://travis-ci.org/lindahua/SGDOptim.jl.svg?branch=master)](https://travis-ci.org/lindahua/SGDOptim.jl)
 
 ---
 
