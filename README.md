@@ -1,6 +1,6 @@
 # SGD
 
-A Julia package for Stochastic Gradient Descent (SGD)
+A Julia package for Gradient Descent and Stochastic Gradient Descent (SGD)
 
 [![Build Status](https://travis-ci.org/lindahua/SGD.jl.svg?branch=master)](https://travis-ci.org/lindahua/SGD.jl)
 
@@ -46,3 +46,27 @@ From this example, we can see that an SGD optimization procedure involves multip
 - The data set, which is given by ``X`` and ``y`` here.
 
 - The callback mechanism that enables the interoperability with the world. Particularly, we use an ``cbctrl`` option to control how frequently the callback is invoked, and the ``callback`` option to actually supply the callback.
+
+---
+
+## Algorithms
+
+This package provides the following algorithms.
+
+#### Conventional Methods
+
+- [ ] Steepest Gradient Descent
+- [ ] Nesterov's Accelerated Gradient Descent
+- [ ] Proximal Gradient Descent
+
+#### Stochastic Methods (per-sample or per-mini-batch updates)
+
+- [x] Stochastic Gradient Descent
+- [ ] Accelerated Stochastic Gradient Descent
+- [ ] Stochastic Proximal Gradient Descent
+
+#### Parallel/Distributed Methods
+
+- [ ] Hogwild!
+- [ ] Parallel Alternate Direction Methods of Multipliers (ADMM)
+- [ ] ADMM with Variable Splitting
