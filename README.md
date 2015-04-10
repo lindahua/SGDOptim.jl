@@ -20,15 +20,15 @@ Here is an example that illustrates how this package can be used to solve a regr
 #     n be the number of samples
 
 # prepare experimental data
-d = length(theta_g)
+d = length(θ_g)
 X = randn(d, n)
-y = vec(theta_g'X) + σ * randn(n)
+y = vec(θ_g'X) + σ * randn(n)
 
 # initialize solution
-theta_0 = zeros(d)
+θ_0 = zeros(d)
 
 # optimize
-sol = sgd(sqrloss!, theta_0,
+θ = sgd(sqrloss!, θ_0,
     SampleSeq(X, y, randperm(n)),  # a stream of samples, with random permuted order
     cbctrl=ByInterval(100),        # invoke the callback every 100 iteration
     callback=simple_trace     # callback: print the optimization trace when invoked
