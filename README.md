@@ -29,9 +29,9 @@ theta_0 = zeros(d)
 
 # optimize
 sol = sgd(sqrloss!, theta_0,
-    SampleSeq(X, y, randperm(n)),  # supply a stream of samples, using random permuted order
+    SampleSeq(X, y, randperm(n)),  # a stream of samples, with random permuted order
     cbctrl=ByInterval(100),        # invoke the callback every 100 iteration
-    callback=gtcompare_trace(theta_g)  # callback: print the optimization trace when invoked
+    callback=simple_trace     # callback: print the optimization trace when invoked
 )
 
 ```
@@ -44,7 +44,7 @@ From this example, we can see that an SGD optimization procedure involves multip
 
 - The data stream, which is given by both the sample set ``X`` and ``y``, as well as the order of supplying the samples.
 
-  **Note:** with the streaming facilities provided by the package, one can supply the data as mini-batches instead of on an per-sample basis.
+  **Note:** with the streaming facilities provided by the package, one can supply the data as mini-batches instead of on a per-sample basis.
 
 - The callback mechanism that enables the interoperability with the world. Particularly, we use an ``cbctrl`` option to control how frequently the callback is invoked, and the ``callback`` option to actually supply the callback.
 
