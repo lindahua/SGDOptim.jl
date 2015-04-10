@@ -29,8 +29,8 @@ y = vec(θ_g'X) + σ * randn(n)
 
 # optimize
 θ = sgd(sqrloss!, θ_0,
-    SampleSeq(X, y, randperm(n)),  # a stream of samples, with random permuted order
-    cbctrl=ByInterval(100),        # invoke the callback every 100 iteration
+    minibatch_seq(X, y, 10),  # a stream of mini-batches of size 10
+    cbctrl=ByInterval(100),   # invoke the callback every 100 iteration
     callback=simple_trace     # callback: print the optimization trace when invoked
 )
 
@@ -42,9 +42,9 @@ From this example, we can see that an SGD optimization procedure involves multip
 
 - The loss function: ``sqrloss!`` is a functor, which indicates that we use *squared loss*.
 
-- The data stream, which is given by both the sample set ``X`` and ``y``, as well as the order of supplying the samples.
+- The data stream.
 
-  **Note:** with the streaming facilities provided by the package, one can supply the data as mini-batches instead of on a per-sample basis.
+  **Note:** This package provides various ways to configure the data stream. For example, data can be supplied on a per-sample basis in any given order, or via mini-batches. 
 
 - The callback mechanism that enables the interoperability with the world. Particularly, we use an ``cbctrl`` option to control how frequently the callback is invoked, and the ``callback`` option to actually supply the callback.
 
