@@ -21,6 +21,7 @@ end
 x = [0.4, 0.3, 0.2]   # θ'x = 1.6
 n = 100
 g = zeros(length(θ))
+zg = zeros(length(θ))
 
 # Squared loss
 
@@ -39,3 +40,18 @@ vr, gr = safe_loss_and_grad(sqrloss!, θ, X, y)
 v = sqrloss!(g, θ, X, y)
 @test_approx_eq v vr
 @test_approx_eq g gr
+
+
+# Hinge loss
+
+v = hingeloss!(g, θ, x, 1)
+@test_approx_eq 0.0 v
+@test_approx_eq zg g
+
+v = hingeloss!(g, θ, 0.5x, 1)
+@test_approx_eq 0.2 v
+@test_approx_eq -0.5*x g
+
+v = hingeloss!(g, θ, x, -1)
+@test_approx_eq 2.6 v
+@test_approx_eq x g

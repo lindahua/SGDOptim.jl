@@ -46,7 +46,7 @@ function call(::HingeLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::R
     if r >= one(r)
         fill!(g, 0)
     else
-        scale!(g, y, x)
+        scale!(g, -y, x)
     end
     max(1.0 - r, 0.0)
 end
@@ -59,7 +59,7 @@ function call(::HingeLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::D
     for i = 1:length(u)
         uy = u[i] * y[i]
         if uy < one(uy)
-            axpy!(y[i], x, g)
+            axpy!(-y[i], x, g)
             v += (one(uy) - uy)
         end
     end

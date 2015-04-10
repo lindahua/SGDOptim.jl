@@ -18,8 +18,9 @@ export
     ScalarLoss,
     MultinomialLoss,
 
-    SqrLoss,
-    sqrloss!,
+    SqrLoss, sqrloss!,
+    HingeLoss, hingeloss!,
+    LogisticLoss, logisticloss!,    
 
     # callback.jl
     CallbackControl,
