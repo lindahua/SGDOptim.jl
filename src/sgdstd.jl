@@ -13,16 +13,17 @@ function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
 
     # main loop
     t = 0
-    for s in stream
+    for (inds, s) in stream
         t += 1
+        n = length(inds)
+
         v = loss!(g, θ, s...)
         λ = convert(T, lrate(t))::T
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
-        tloss += v
 
         cbctrl = check(cbctrl)
         if isready(cbctrl)
-            callback(SGDRecord(θ, t, t, tloss))
+            callback(θ, t, n, v)
         end
     end
 

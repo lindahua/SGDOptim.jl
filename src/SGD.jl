@@ -9,7 +9,9 @@ export
 
     # streams.jl
     SampleStream,
-    SampleSeq,
+    GenericSampleSeq,
+    sample_seq,
+    minibatch_seq,
 
     # loss.jl
     Loss,
@@ -19,8 +21,7 @@ export
     SqrLoss,
     sqrloss!,
 
-    # utils.jl
-    SGDRecord,
+    # callback.jl
     CallbackControl,
     NoCallback,
     ByInterval,
@@ -32,7 +33,6 @@ export
     sgd!,
     sgd
 
-include("common.jl")
 include("streams.jl")
 include("loss.jl")
 include("callback.jl")

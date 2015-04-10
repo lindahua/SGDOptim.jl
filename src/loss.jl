@@ -12,10 +12,18 @@ abstract MultinomialLoss <: Loss
 type SqrLoss <: ScalarLoss
 end
 
+sqrloss! = SqrLoss()
+
+# for a single sample
 function call(::SqrLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
     r = dot(θ, x) - y
     scale!(g, r, x)
     0.5 * abs2(r)
 end
 
-sqrloss! = SqrLoss()
+# for a sample batch
+function call(::SqrLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
+    r = x'θ - y
+    A_mul_B!(g, x, r)
+    return 0.5 * sumabs2(r)
+end
