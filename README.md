@@ -29,8 +29,9 @@ y = vec(θ_g'X) + σ * randn(n)
 
 # optimize
 θ = sgd(sqrloss!, θ_0,
-    minibatch_seq(X, y, 10),  # a stream of mini-batches of size 10
-    cbctrl=ByInterval(100),   # invoke the callback every 100 iteration
+    minibatch_seq(X, y, 10),       # a stream of mini-batches of size 10
+    lrate = t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
+    cbctrl=ByInterval(5),     # invoke the callback every 5 iteration
     callback=simple_trace     # callback: print the optimization trace when invoked
 )
 
@@ -44,7 +45,7 @@ From this example, we can see that an SGD optimization procedure involves multip
 
 - The data stream.
 
-  **Note:** This package provides various ways to configure the data stream. For example, data can be supplied on a per-sample basis in any given order, or via mini-batches. 
+  **Note:** This package provides various ways to configure the data stream. For example, data can be supplied on a per-sample basis in any given order, or via mini-batches.
 
 - The callback mechanism that enables the interoperability with the world. Particularly, we use an ``cbctrl`` option to control how frequently the callback is invoked, and the ``callback`` option to actually supply the callback.
 
