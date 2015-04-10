@@ -30,7 +30,7 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 
 # optimize
 θ = sgd(sqrloss!, θ_0,
-    minibatch_seq(X, y, 10),       # a stream of mini-batches of size 10
+    minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
     lrate=t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
     cbctrl=ByInterval(5),     # invoke the callback every 5 iteration
     callback=simple_trace     # callback: print the optimization trace when invoked
