@@ -1,4 +1,4 @@
-using SGD
+using SGDOptim
 using Base.Test
 
 

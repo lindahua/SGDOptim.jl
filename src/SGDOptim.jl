@@ -1,4 +1,4 @@
-module SGD
+module SGDOptim
 
 using ArrayViews
 
@@ -18,7 +18,7 @@ export
     ScalarLoss,
     MultinomialLoss,
     value_and_deriv,
-    
+
     SqrLoss, sqrloss!,
     HingeLoss, hingeloss!,
     LogisticLoss, logisticloss!,

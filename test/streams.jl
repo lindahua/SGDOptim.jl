@@ -1,7 +1,6 @@
 
-using SGD
+using SGDOptim
 using Base.Test
-
 
 n = 10
 k = 8
@@ -36,8 +35,8 @@ end
 
 # case 3: mini-batches in natural order
 
-@test SGD.batches(10, 3) == UnitRange{Int}[1:3, 4:6, 7:9, 10:10]
-@test SGD.batches(12, 3) == UnitRange{Int}[1:3, 4:6, 7:9, 10:12]
+@test SGDOptim.batches(10, 3) == UnitRange{Int}[1:3, 4:6, 7:9, 10:10]
+@test SGDOptim.batches(12, 3) == UnitRange{Int}[1:3, 4:6, 7:9, 10:12]
 
 X = rand(1:100, (5, n))
 y = rand(1:100, n)
