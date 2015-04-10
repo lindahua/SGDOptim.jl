@@ -55,3 +55,14 @@ v = hingeloss!(g, θ, 0.5x, 1)
 v = hingeloss!(g, θ, x, -1)
 @test_approx_eq 2.6 v
 @test_approx_eq x g
+
+X = randn(length(θ), n)
+y = sign(X'θ + 0.5 * randn(n))
+
+vr, gr = safe_loss_and_grad(hingeloss!, θ, X, y)
+v = hingeloss!(g, θ, X, y)
+@test_approx_eq v vr
+@test_approx_eq g gr
+
+
+# Logistic loss

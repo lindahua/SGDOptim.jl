@@ -17,10 +17,11 @@ export
     Loss,
     ScalarLoss,
     MultinomialLoss,
-
+    value_and_deriv,
+    
     SqrLoss, sqrloss!,
     HingeLoss, hingeloss!,
-    LogisticLoss, logisticloss!,    
+    LogisticLoss, logisticloss!,
 
     # callback.jl
     CallbackControl,

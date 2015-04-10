@@ -7,6 +7,30 @@ abstract ScalarLoss <: Loss
 abstract MultinomialLoss <: Loss
 
 
+## generic implementation of scalar loss
+
+function call(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
+    u = dot(θ, x)
+    v, dv = value_and_deriv(f, u, y)
+    dv == 0.0 ? fill!(g, 0) :
+    dv == 1.0 ? copy!(g, x) :
+                scale!(g, dv, x)
+    return v
+end
+
+function call(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
+    u = x'θ
+    v = 0.0
+    for i = 1:length(u)
+        vi, dvi = value_and_deriv(f, u[i], y[i])
+        v += vi
+        u[i] = dvi
+    end
+    A_mul_B!(g, x, u)
+    return v
+end
+
+
 ## Squared loss (for linear regression)
 #
 #   loss(θ, x, y) := (1/2) * (θ'x - y)^2
@@ -16,19 +40,11 @@ end
 
 sqrloss! = SqrLoss()
 
-# for a single sample
-function call(::SqrLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
-    r = dot(θ, x) - y
-    scale!(g, r, x)
-    0.5 * abs2(r)
-end
+_half(x::Real) = 0.5 * x
+_half(x::Float32) = 0.5f0 * x
+_half(x::Float64) = 0.5 * x
 
-# for a sample batch
-function call(::SqrLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
-    r = x'θ - y
-    A_mul_B!(g, x, r)
-    return 0.5 * sumabs2(r)
-end
+value_and_deriv(::SqrLoss, u::Real, y::Real) = (r = u - y; v = _half(abs2(r)); (v, r))
 
 
 ## Hinge loss (for SVM)
@@ -40,30 +56,9 @@ end
 
 hingeloss! = HingeLoss()
 
-# for a single sample
-function call(::HingeLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
-    r = dot(θ, x) * y
-    if r >= one(r)
-        fill!(g, 0)
-    else
-        scale!(g, -y, x)
-    end
-    max(1.0 - r, 0.0)
-end
-
-# for a sample batch
-function call(::HingeLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
-    u = x'θ
-    fill!(g, 0)
-    v = zero(u)
-    for i = 1:length(u)
-        uy = u[i] * y[i]
-        if uy < one(uy)
-            axpy!(-y[i], x, g)
-            v += (one(uy) - uy)
-        end
-    end
-    return v
+function value_and_deriv(::HingeLoss, u::Real, y::Real)
+    yu = oftype(u, y) * u
+    yu >= one(u) ? (zero(u), zero(u)) : (one(u) - yu, oftype(u, -y))
 end
 
 
@@ -76,36 +71,13 @@ end
 
 logisticloss! = LogisticLoss()
 
-# for a single sample
-
-# computes (log(1 + exp(-x)), exp(-x) / (1 + exp(-x)))
-# in a numerically stable way
-#
-function _logistic_deriv(x::Real)
-    if x >= zero(x)
-        e = exp(-x)
-        (log1p(e), e / (one(e) + e))
+function value_and_deriv(::LogisticLoss, u::Real, y::Real)
+    yu = oftype(u, y) * u
+    if yu >= zero(u)
+        e = exp(-yu)
+        (log1p(e), -e / (one(e) + e))
     else
-        e = exp(x)
-        (log1p(e) - x, one(e) / (one(e) + e))
+        e = exp(yu)
+        (log1p(e) - yu, -one(e) / (one(e) + e))
     end
-end
-
-function call(::LogisticLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
-    r = dot(θ, x) * y
-    v, dv = _logistic_deriv(r)
-    scale!(g, -y * dv, x)
-    return v
-end
-
-function call(::LogisticLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
-    u = x'θ
-    v = 0.0
-    for i = 1:length(u)
-        vi, u[i] = _logistic_deriv(y[i] * u[i])
-        v += vi
-        u[i] *= (-y[i])
-    end
-    A_mul_B!(g, X, u)
-    return v
 end
