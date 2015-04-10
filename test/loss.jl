@@ -19,6 +19,7 @@ end
 
 θ = [1.0, 2.0, 3.0]
 x = [0.4, 0.3, 0.2]   # θ'x = 1.6
+θx = dot(θ, x)
 n = 100
 g = zeros(length(θ))
 zg = zeros(length(θ))
@@ -66,3 +67,29 @@ v = hingeloss!(g, θ, X, y)
 
 
 # Logistic loss
+
+v = logisticloss!(g, θ, x, 1)
+vr = log(1.0 + exp(-θx))
+gc = - exp(-θx) / (1.0 + exp(-θx))
+@test_approx_eq vr v
+@test_approx_eq gc * x g
+
+v = logisticloss!(g, θ, -x, 0.5)
+vr = log(1.0 + exp(0.5 * θx))
+gc = - 0.5 * exp(0.5 * θx) / (1.0 + exp(0.5 * θx))
+@test_approx_eq vr v
+@test_approx_eq gc * (-x) g
+
+v = logisticloss!(g, θ, x, -1)
+vr = log(1.0 + exp(θx))
+gc = exp(θx) / (1.0 + exp(θx))
+@test_approx_eq vr v
+@test_approx_eq gc * x g
+
+X = randn(length(θ), n)
+y = 2.0 * rand(n) - 1.0
+
+vr, gr = safe_loss_and_grad(logisticloss!, θ, X, y)
+v = logisticloss!(g, θ, X, y)
+@test_approx_eq v vr
+@test_approx_eq g gr

@@ -72,12 +72,13 @@ end
 logisticloss! = LogisticLoss()
 
 function value_and_deriv(::LogisticLoss, u::Real, y::Real)
-    yu = oftype(u, y) * u
+    y_ = oftype(u, y)
+    yu = y_ * u
     if yu >= zero(u)
         e = exp(-yu)
-        (log1p(e), -e / (one(e) + e))
+        (log1p(e), -y_ * e / (one(e) + e))
     else
         e = exp(yu)
-        (log1p(e) - yu, -one(e) / (one(e) + e))
+        (log1p(e) - yu, -y_ * one(e) / (one(e) + e))
     end
 end
