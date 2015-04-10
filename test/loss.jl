@@ -18,19 +18,19 @@ end
 
 
 θ = [1.0, 2.0, 3.0]
-x = [4.0, 3.0, 2.0]
+x = [0.4, 0.3, 0.2]   # θ'x = 1.6
 n = 100
 g = zeros(length(θ))
 
 # Squared loss
 
-v = sqrloss!(g, θ, x, 13.0)
-@test v == 4.5
-@test g == 3.0 * x
+v = sqrloss!(g, θ, x, 1.3)
+@test_approx_eq 0.045 v
+@test_approx_eq 0.3x g
 
-v = sqrloss!(g, θ, -x, -12.0)
-@test v == 8.0
-@test g == -4.0 * (-x)
+v = sqrloss!(g, θ, -x, -1.2)
+@test_approx_eq 0.08 v
+@test_approx_eq 0.4x g
 
 X = randn(length(θ), n)
 y = X'θ + 0.3 * randn(n)
