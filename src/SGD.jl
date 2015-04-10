@@ -21,16 +21,19 @@ export
     sgd,
 
     # utilities
+    SGDRecord,
     CallbackControl,
     NoCallback,
     ByInterval,
 
-    simple_trace
+    simple_trace,
+    gtcompare_trace
 
 
 include("common.jl")
-include("utils.jl")
 include("loss.jl")
+include("callback.jl")
+
 include("sgdstd.jl")
 
 end # module

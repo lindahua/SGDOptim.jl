@@ -1,4 +1,3 @@
-
 # Callback controls
 
 abstract CallbackControl
@@ -34,6 +33,15 @@ isready(c::ByInterval) = (c.r == 0)
 # Callbacks
 
 function simple_trace(r::SGDRecord)
-    @printf("Iter %d: cur.loss = %.4e, avg.loss = %.4e\n",
-        r.niters, current_loss(r), avg_loss(r))
+    @printf("Iter %d: avg.loss = %.4e\n",
+        r.niters, avg_loss(r))
+end
+
+function gtcompare_trace(θg::DenseVector)
+    function _trace(r::SGDRecord)
+        dev = vecnorm(r.sol - θg)
+        @printf("Iter %d: avg.loss = %.4e, deviation = %.4e\n",
+            r.niters, avg_loss(r), dev)
+    end
+    return _trace
 end

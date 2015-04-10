@@ -4,7 +4,7 @@ function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
                                 θ::DenseVector{T},
                                 X::DenseMatrix{T},
                                 y::AbstractVector,
-                                order,
+                                order::AbstractVector,
                                 lrate,
                                 cbctrl,
                                 callback)
@@ -27,7 +27,7 @@ function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
 
         cbctrl = check(cbctrl)
         if isready(cbctrl)
-            callback(SGDRecord(t, t, v, tloss))
+            callback(SGDRecord(θ, t, t, tloss))
         end
     end
 
