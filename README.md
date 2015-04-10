@@ -1,4 +1,4 @@
-# SGD
+# SGDOptim
 
 A Julia package for Gradient Descent and Stochastic Gradient Descent (SGD)
 
