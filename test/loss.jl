@@ -1,5 +1,46 @@
 using SGDOptim
 using Base.Test
+using DualNumbers
+
+function verify_value_and_deriv(loss::ScalarLoss, fun, us::AbstractVector{Float64}, ys::AbstractVector{Float64})
+    for y in ys
+        for u in us
+            v, dv = value_and_deriv(loss, u, y)
+            fd = fun(dual(u, 1.0), y)
+            @test_approx_eq real(fd) v
+            @test_approx_eq epsilon(fd) dv
+        end
+    end
+end
+
+function verify_value_and_grad(loss::ScalarLoss, fun, θ::Vector, x::Vector, y::Real)
+    u = dot(θ, x)
+    fd = fun(dual(u, 1.0), y)
+    g = zeros(length(θ))
+    v = value_and_grad!(loss, g, θ, x, y)
+    @test_approx_eq real(fd) v
+    @test_approx_eq epsilon(fd) * x g
+end
+
+function verify_values_and_grads(loss::ScalarLoss, fun, θ::Vector, X::Matrix, Y::Vector)
+    n = size(X, 2)
+    U = X'θ
+    g = zeros(length(θ))
+    v = value_and_grad!(loss, g, θ, X, Y)
+
+    rv = 0.0
+    rg = zeros(length(θ))
+    for i = 1:n
+        u = U[i]
+        y = Y[i]
+        fd = fun(dual(u, 1.0), y)
+        rv += real(fd)
+        rg += epsilon(fd) * X[:,i]
+    end
+
+    @test_approx_eq rv v
+    @test_approx_eq rg g
+end
 
 
 function safe_loss_and_grad(loss::ScalarLoss, θ::Vector, X::Matrix, y::Vector)
@@ -26,70 +67,43 @@ zg = zeros(length(θ))
 
 # Squared loss
 
-v = value_and_grad!(sqrloss, g, θ, x, 1.3)
-@test_approx_eq 0.045 v
-@test_approx_eq 0.3x g
+_sqrf(u::Dual, y) = 0.5 * abs2(u - y)
 
-v = value_and_grad!(sqrloss, g, θ, -x, -1.2)
-@test_approx_eq 0.08 v
-@test_approx_eq 0.4x g
+verify_value_and_deriv(sqrloss, _sqrf, -3.0:0.25:3.0, [0.0, 1.0, -2.0])
+
+verify_value_and_grad(sqrloss, _sqrf, θ, x, 1.3)
+verify_value_and_grad(sqrloss, _sqrf, θ, -x, -1.2)
 
 X = randn(length(θ), n)
-y = X'θ + 0.3 * randn(n)
-
-vr, gr = safe_loss_and_grad(sqrloss, θ, X, y)
-v = value_and_grad!(sqrloss, g, θ, X, y)
-@test_approx_eq v vr
-@test_approx_eq g gr
+Y = X'θ + 0.3 * randn(n)
+verify_values_and_grads(sqrloss, _sqrf, θ, X, Y)
 
 
 # Hinge loss
 
-v = value_and_grad!(hingeloss, g, θ, x, 1)
-@test_approx_eq 0.0 v
-@test_approx_eq zg g
+_hingef(u::Dual, y) = y * real(u) < 1.0 ? 1.0 - y * u : dual(0.0, 0.0)
 
-v = value_and_grad!(hingeloss, g, θ, 0.5x, 1)
-@test_approx_eq 0.2 v
-@test_approx_eq -0.5*x g
+verify_value_and_deriv(hingeloss, _hingef, -2.0:0.25:2.0, [-1.0, 1.0])
 
-v = value_and_grad!(hingeloss, g, θ, x, -1)
-@test_approx_eq 2.6 v
-@test_approx_eq x g
+verify_value_and_grad(hingeloss, _hingef, θ, x, 1)
+verify_value_and_grad(hingeloss, _hingef, θ, 0.5x, 1)
+verify_value_and_grad(hingeloss, _hingef, θ, x, -1)
 
 X = randn(length(θ), n)
-y = sign(X'θ + 0.5 * randn(n))
-
-vr, gr = safe_loss_and_grad(hingeloss, θ, X, y)
-v = value_and_grad!(hingeloss, g, θ, X, y)
-@test_approx_eq v vr
-@test_approx_eq g gr
+Y = sign(X'θ + 0.5 * randn(n))
+verify_values_and_grads(hingeloss, _hingef, θ, X, Y)
 
 
 # Logistic loss
 
-v = value_and_grad!(logisticloss, g, θ, x, 1)
-vr = log(1.0 + exp(-θx))
-gc = - exp(-θx) / (1.0 + exp(-θx))
-@test_approx_eq vr v
-@test_approx_eq gc * x g
+_logisf(u::Dual, y) = log(1.0 + exp(-y * u))
 
-v = value_and_grad!(logisticloss, g, θ, -x, 0.5)
-vr = log(1.0 + exp(0.5 * θx))
-gc = - 0.5 * exp(0.5 * θx) / (1.0 + exp(0.5 * θx))
-@test_approx_eq vr v
-@test_approx_eq gc * (-x) g
+verify_value_and_deriv(logisticloss, _logisf, -3.0:0.25:3.0, [-1.0, -0.5, 0.5, 1.0])
 
-v = value_and_grad!(logisticloss, g, θ, x, -1)
-vr = log(1.0 + exp(θx))
-gc = exp(θx) / (1.0 + exp(θx))
-@test_approx_eq vr v
-@test_approx_eq gc * x g
+verify_value_and_grad(logisticloss, _logisf, θ, x, 1)
+verify_value_and_grad(logisticloss, _logisf, θ, x, -1)
+verify_value_and_grad(logisticloss, _logisf, θ, -x, 0.5)
 
 X = randn(length(θ), n)
-y = 2.0 * rand(n) - 1.0
-
-vr, gr = safe_loss_and_grad(logisticloss, θ, X, y)
-v = value_and_grad!(logisticloss, g, θ, X, y)
-@test_approx_eq v vr
-@test_approx_eq g gr
+Y = 2.0 * rand(n) - 1.0
+verify_values_and_grads(logisticloss, _logisf, θ, X, Y)
