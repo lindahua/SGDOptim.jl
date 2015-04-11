@@ -29,9 +29,10 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 # optimize
 θ = sgd(linear_predictor, sqrloss, θ_0,
     minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
-    lrate=t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
-    cbinterval=5,             # invoke the callback every 5 iterations
-    callback=simple_trace     # callback: print the optimization trace when invoked
+    reg = SqrL2Reg(0.01),          # regularization
+    lrate = t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
+    cbinterval = 5,                # invoke the callback every 5 iterations
+    callback = simple_trace        # callback: print the optimization trace when invoked
 )
 
 ```
@@ -77,6 +78,18 @@ Here, we use ``sqrloss`` to indicate the use of *Squared loss*, which is a popul
 - [ ] L1-norm quantile loss
 
 In addition, the package specifies a uniform interface for users to implement and use their customized loss functions.
+
+### Regularization
+
+Regularization is important in ensuring the numerical stability and generalized performance of the estimated model. Here, we use ``SqrL2Reg`` to indicate the use of *squared L2-norm regularizer*. This package provides a set of regularizers:
+
+- [x] No regularization
+- [x] Squared L2-norm
+- [x] L1-norm (*e.g.* LASSO)
+- [ ] Elastic Net
+- [ ] Grouped LASSO
+- [ ] Fused LASSO
+
 
 ### Learning Rate
 

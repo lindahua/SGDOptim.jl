@@ -2,6 +2,7 @@
 
 function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
                                 loss::UnivariateLoss,
+                                reg::Regularizer,
                                 θ::DenseVector{T},
                                 stream::SampleStream,
                                 lrate,
@@ -18,10 +19,17 @@ function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
         t += 1
         n = length(inds)
 
+        # for loss
         v = loss_and_grad!(pred, loss, g, θ, s...)
+
+        # for regularizer
+        v += value_and_addgrad!(reg, g, θ)
+
+        # update
         λ = convert(T, lrate(t))::T
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
 
+        # callback
         if cbinterval > 0 && t % cbinterval == 0
             callback(θ, t, n, v)
         end
@@ -36,9 +44,10 @@ function sgd{T<:FloatingPoint}(pred::UnivariatePredictor,
                                loss::UnivariateLoss,
                                θ::DenseVector{T},
                                stream::SampleStream;
+                               reg::Regularizer=NoReg(),
                                lrate=t->1.0 / t,
                                cbinterval::Int = 0,
                                callback=simple_trace)
 
-    sgd!(pred, loss, copy(θ), stream, lrate, cbinterval, callback)
+    sgd!(pred, loss, reg, copy(θ), stream, lrate, cbinterval, callback)
 end

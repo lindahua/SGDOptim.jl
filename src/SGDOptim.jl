@@ -31,6 +31,12 @@ export
     HingeLoss, hingeloss,
     LogisticLoss, logisticloss,
 
+    # regularizers.jl
+    Regularizer,
+    NoReg,
+    SqrL2Reg,
+    L1Reg,
+
     # callback.jl
     simple_trace,
     gtcompare_trace,
@@ -45,6 +51,7 @@ export
 include("streams.jl")
 include("predictors.jl")
 include("loss.jl")
+include("regularizers.jl")
 include("callback.jl")
 
 include("sgdstd.jl")

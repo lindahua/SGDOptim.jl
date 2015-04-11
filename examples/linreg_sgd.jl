@@ -18,10 +18,11 @@ function linreg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
 
     # optimize
     θ = sgd(linear_predictor, sqrloss, θ_0,
-        minibatch_seq(X, y, 10),        # configure the way data are supplied
-        lrate = t->1.0 / (100.0 + t),   # learing rate policy
-        cbinterval=5,                   # how frequently callback is invoked
-        callback=gtcompare_trace(θ_g))  # the callback function
+        minibatch_seq(X, y, 10),          # configure the way data are supplied
+        reg = SqrL2Reg(0.01),             # regularization
+        lrate = t->1.0 / (100.0 + t),     # learing rate policy
+        cbinterval = 5,                   # how frequently callback is invoked
+        callback = gtcompare_trace(θ_g))  # the callback function
 
     # compare solution with initial guess
     println()
