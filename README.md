@@ -72,8 +72,8 @@ Here, we use ``LinearPredictor`` to indicate the use of the predicting function 
 Here, we use ``SqrLoss`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
 
 - [x] Squared loss
-- [ ] Hinge loss
-- [ ] Logistic loss
+- [x] Hinge loss
+- [x] Logistic loss
 - [ ] Multinomial logistic loss
 - [ ] L1-norm quantile loss
 
@@ -86,7 +86,7 @@ Regularization is important in ensuring the numerical stability and generalized 
 - [x] No regularization
 - [x] Squared L2-norm
 - [x] L1-norm (*e.g.* LASSO)
-- [ ] Elastic Net
+- [x] Elastic Net
 - [ ] Grouped LASSO
 - [ ] Fused LASSO
 

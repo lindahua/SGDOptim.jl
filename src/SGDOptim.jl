@@ -36,6 +36,7 @@ export
     NoReg,
     SqrL2Reg,
     L1Reg,
+    ElasticReg,
 
     # callback.jl
     simple_trace,

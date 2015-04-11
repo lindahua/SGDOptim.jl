@@ -26,3 +26,10 @@ g = copy(g0)
 v = SGDOptim.value_and_addgrad!(L1Reg(2.5), g, θ)
 @test v == 37.5
 @test g == g0 + 2.5 * sign(θ)
+
+# ElasticReg
+
+g = copy(g0)
+v = SGDOptim.value_and_addgrad!(ElasticReg(1.5, 2.5), g, θ)
+@test v == 118.75
+@test g == g0 + 1.5 * sign(θ) + 2.5θ
