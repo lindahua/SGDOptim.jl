@@ -1,5 +1,6 @@
 tests = [
     "streams",
+    "predictors",
     "loss"
 ]
 

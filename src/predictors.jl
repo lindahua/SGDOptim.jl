@@ -1,8 +1,8 @@
 
 abstract Predictor
 
-abstract UnivariatePredictor
-abstract MultivariatePredictor
+abstract UnivariatePredictor <: Predictor
+abstract MultivariatePredictor <: Predictor
 
 type LinearPredictor <: UnivariatePredictor
 end

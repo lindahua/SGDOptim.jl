@@ -18,6 +18,7 @@ export
     Predictor,
     UnivariatePredictor,
     MultivariatePredictor,
+    predict,
 
     LinearPredictor, linear_predictor,
 
@@ -25,18 +26,12 @@ export
     Loss,
     UnivariateLoss,
     MultinomialLoss,
-    loss_and_grad!,
-    value_and_deriv,
 
     SqrLoss, sqrloss,
     HingeLoss, hingeloss,
     LogisticLoss, logisticloss,
 
     # callback.jl
-    CallbackControl,
-    NoCallback,
-    ByInterval,
-
     simple_trace,
     gtcompare_trace,
 
