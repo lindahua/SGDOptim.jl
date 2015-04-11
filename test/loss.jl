@@ -2,6 +2,9 @@ using SGDOptim
 using Base.Test
 using DualNumbers
 
+
+## tools for checking function value and gradients
+
 function verify_value_and_deriv(loss::UnivariateLoss, fun, us::AbstractVector{Float64}, ys::AbstractVector{Float64})
     for y in ys
         for u in us
@@ -11,6 +14,27 @@ function verify_value_and_deriv(loss::UnivariateLoss, fun, us::AbstractVector{Fl
             @test_approx_eq epsilon(fd) dv
         end
     end
+end
+
+function _vds(fun, u::Vector{Float64}, y)  # compute value and derivatives using dual numbers
+    k = length(u)
+    dv = zeros(k)
+    v = real(fun(dual(u), y))
+    for i = 1:k
+        ep = zeros(k)
+        ep[i] = 1.0
+        dv[i] = epsilon(fun(dual(u, ep), y))
+    end
+    return v, dv
+end
+
+function verify_value_and_deriv(loss::MultivariateLoss, fun, u::Vector{Float64}, y)
+    k = length(u)
+    dvs = copy(u)
+    v = SGDOptim.value_and_deriv!(loss, dvs, y)
+    rv, rdvs = _vds(fun, u, y)
+    @test_approx_eq rv v
+    @test_approx_eq rdvs dvs
 end
 
 function verify_loss_and_grad(loss::UnivariateLoss, fun, θ::Vector, x::Vector, y::Real)
@@ -41,6 +65,37 @@ function verify_loss_and_grads(loss::UnivariateLoss, fun, θ::Vector, X::Matrix,
     @test_approx_eq rv v
     @test_approx_eq rg g
 end
+
+function verify_loss_and_grad(loss::MultivariateLoss, fun, θ::Matrix, x::Vector, y)
+    u = θ'x
+    rv, rdvs = _vds(fun, u, y)
+    rg = A_mul_Bt(x, rdvs)
+    g = zeros(size(θ))
+    v = SGDOptim.value_and_grad!(MvLinearPredictor(), loss, g, θ, x, y)
+
+    @test_approx_eq rv v
+    @test_approx_eq rg g
+end
+
+function verify_loss_and_grad(loss::MultivariateLoss, fun, θ::Matrix, X::Matrix, Y)
+    U = θ'X
+
+    rv = 0.0
+    rg = zeros(size(θ))
+    for i = 1:size(X,2)
+        y_i = SGDOptim.gets(Y, i)
+        rv_i, rdvs_i = _vds(fun, U[:,i], y_i)
+        rg_i = A_mul_Bt(X[:,i], rdvs_i)
+        rv += rv_i
+        rg += rg_i
+    end
+    g = zeros(size(θ))
+    v = SGDOptim.value_and_grad!(MvLinearPredictor(), loss, g, θ, X, Y)
+
+    @test_approx_eq rv v
+    @test_approx_eq rg g
+end
+
 
 
 # data
@@ -94,3 +149,29 @@ verify_loss_and_grad(LogisticLoss(), _logisf, θ, -x, 0.5)
 X = randn(length(θ), n)
 Y = 2.0 * rand(n) - 1.0
 verify_loss_and_grads(LogisticLoss(), _logisf, θ, X, Y)
+
+
+# Multinomial Logistic loss
+
+d = 5
+k = 3
+n = 8
+θ = randn(d, k)
+X = randn(d, n)
+Y = [1,2,3,2,3,1,3,2]
+@assert length(Y) == n
+
+_mlogisf(u::Vector{Dual{Float64}}, y::Int) = log(sum(exp(u))) - u[y]
+
+for y = 1:4
+    verify_value_and_deriv(MultiLogisticLoss(), _mlogisf, [-2.0, 0.0, 1.0, 3.0], y)
+end
+
+for i = 1:n
+    x = copy(X[:,i])
+    for y = 1:k
+        verify_loss_and_grad(MultiLogisticLoss(), _mlogisf, θ, x, y)
+    end
+end
+
+verify_loss_and_grad(MultiLogisticLoss(), _mlogisf, θ, X, Y)

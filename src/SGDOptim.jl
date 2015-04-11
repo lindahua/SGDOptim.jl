@@ -29,11 +29,12 @@ export
     # loss.jl
     Loss,
     UnivariateLoss,
-    MultinomialLoss,
+    MultivariateLoss,
 
     SqrLoss,
     HingeLoss,
     LogisticLoss,
+    MultiLogisticLoss,
 
     # regularizers.jl
     Regularizer,

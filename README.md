@@ -39,7 +39,7 @@ A regularized risk minimization problem is generally comprised of three parts:
 - [x] Squared loss
 - [x] Hinge loss
 - [x] Logistic loss
-- [ ] Multinomial logistic loss
+- [x] Multinomial logistic loss
 - [ ] L1-norm quantile loss
 
 **Regularizer:**
@@ -64,7 +64,6 @@ We provide a variety of algorithms, including SGD and its variants, and you may 
 
 **For distributed settings:**
 
-- [ ] Hogwild!
 - [ ] Parallel Alternate Direction Methods of Multipliers (ADMM)
 - [ ] ADMM with Variable Splitting
 
