@@ -62,7 +62,7 @@ Here, we call the ``sgd`` function, which implements the standard SGD algorithm.
 Here, we use ``LinearPredictor`` to indicate the use of the predicting function as ``(θ, x) -> θ'x``. The package provides a set of commonly used predictors:
 
 - [x] Linear predictor
-- [ ] Affine predictor, *i.e.* linear predictor with a bias term
+- [x] Affine predictor, *i.e.* linear predictor with a bias term
 - [ ] Multivariate linear predictor
 - [ ] Multivariate affine predictor
 

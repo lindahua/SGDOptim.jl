@@ -19,8 +19,10 @@ export
     UnivariatePredictor,
     MultivariatePredictor,
     predict,
+    nsamples,
 
     LinearPredictor,
+    AffinePredictor,
 
     # loss.jl
     Loss,
