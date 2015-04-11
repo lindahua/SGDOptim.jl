@@ -43,7 +43,7 @@ pred = AffinePredictor(b)
 @test_approx_eq [2.0x; 2.0b] _predgrad(pred, 2.0, θa, x)
 @test_approx_eq [X * c; b * sum(c)] _predgrad(pred, c, θa, X)
 
-## Multivariate predictor
+## Multivariate linear predictor
 
 d = 5
 k = 3
@@ -67,4 +67,21 @@ pred = MvLinearPredictor()
 @test_approx_eq x * (c') _predgrad(pred, c, θ, x)
 @test_approx_eq X * (C') _predgrad(pred, C, θ, X)
 
- 
+# Multivariate affine predictor
+
+b = 3.75
+a = randn(k)
+θa = [θ; a']
+@assert size(θa) == (d+1, k)
+
+pred = MvAffinePredictor(b)
+
+@test nsamples(pred, θa, x, 0) == 1
+@test nsamples(pred, θa, x, zeros(k)) == 1
+@test nsamples(pred, θa, X, zeros(Int, n)) == n
+@test nsamples(pred, θa, X, zeros(k, n)) == n
+
+@test_approx_eq θ'x + a * b predict(pred, θa, x)
+@test_approx_eq θ'X .+ a * b predict(pred, θa, X)
+@test_approx_eq [x; b] * (c') _predgrad(pred, c, θa, x)
+@test_approx_eq [X; b * ones(1,n)] * (C') _predgrad(pred, C, θa, X)

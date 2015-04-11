@@ -31,8 +31,8 @@ A regularized risk minimization problem is generally comprised of three parts:
 
 - [x] Linear predictor
 - [x] Affine predictor, *i.e.* linear predictor with a bias term
-- [ ] Multivariate linear predictor
-- [ ] Multivariate affine predictor
+- [x] Multivariate linear predictor
+- [x] Multivariate affine predictor
 
 **Loss function:**
 

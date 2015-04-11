@@ -113,3 +113,65 @@ scaled_grad!(::MvLinearPredictor, g::DenseMatrix, c::DenseVector, θ::DenseMatri
 
 scaled_grad!(::MvLinearPredictor, g::DenseMatrix, c::DenseMatrix, θ::DenseMatrix, X::DenseMatrix) =
     A_mul_Bt!(g, X, c)
+
+
+## Multivariate affine predictor
+
+type MvAffinePredictor{T<:FloatingPoint} <: MultivariatePredictor
+    bias::T
+end
+
+MvAffinePredictor{T<:FloatingPoint}(bias::T) = MvAffinePredictor{T}(bias)
+MvAffinePredictor() = MvAffinePredictor(1.0)
+
+function nsamples(::MvAffinePredictor, θ::AbstractMatrix, x::AbstractVector, y)
+    length(x) + 1 == size(θ, 1) || throw(DimensionMismatch("Incorrect sample dimensions."))
+    return 1
+end
+
+function nsamples(::MvAffinePredictor, θ::AbstractMatrix, x::AbstractMatrix, y::AbstractVecOrMat)
+    size(x, 1) + 1 == size(θ, 1) || throw(DimensionMismatch("Incorrect sample dimensions."))
+    n = size(x, 2)
+    size(y, ndims(y)) == n || throw(DimensionMismatch("Inconsistent number of samples."))
+    return n
+end
+
+function predict(pred::MvAffinePredictor, θ::DenseMatrix, x::DenseVector)
+    d = size(θ, 1) - 1
+    k = size(θ, 2)
+    r = At_mul_B(view(θ, 1:d, :), x)
+    b = pred.bias
+    for i = 1:k
+        r[i] += θ[d+1, i] * b
+    end
+    return r
+end
+
+function predict(pred::MvAffinePredictor, θ::DenseMatrix, X::DenseMatrix)
+    d = size(θ, 1) - 1
+    k = size(θ, 2)
+    r = At_mul_B(view(θ, 1:d, :), X)
+    a = scale!(vec(θ[d+1, :]), pred.bias)
+    broadcast!(+, r, r, a)
+    return r
+end
+
+function scaled_grad!(pred::MvAffinePredictor, g::DenseMatrix, c::DenseVector, θ::DenseMatrix, x::DenseVector)
+    d = size(θ, 1) - 1
+    A_mul_Bt!(view(g, 1:d, :), x, c)
+    b = pred.bias
+    for i = 1:size(g, 2)
+        g[d+1, i] = c[i] * b
+    end
+end
+
+function scaled_grad!(pred::MvAffinePredictor, g::DenseMatrix, c::DenseMatrix, θ::DenseMatrix, X::DenseMatrix)
+    d = size(θ, 1) - 1
+    A_mul_Bt!(view(g, 1:d, :), X, c)
+    n = size(X, 2)
+    k = size(θ, 2)
+    a = scale!(sum(c, 2), pred.bias)
+    for i = 1:k
+        g[d+1, i] += a[i]
+    end
+end
