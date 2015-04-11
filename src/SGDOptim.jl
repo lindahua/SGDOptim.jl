@@ -49,6 +49,7 @@ export
 
 # source files
 
+include("utils.jl")
 include("streams.jl")
 include("predictors.jl")
 include("loss.jl")
