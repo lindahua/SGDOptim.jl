@@ -20,7 +20,7 @@ function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
         n = nsamples(pred, θ, s...)
 
         # for loss
-        v = loss_and_grad!(pred, loss, g, θ, s...)
+        v = value_and_grad!(pred, loss, g, θ, s...)
 
         # for regularizer
         v += value_and_addgrad!(reg, g, θ)

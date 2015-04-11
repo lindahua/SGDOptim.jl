@@ -10,7 +10,7 @@ abstract MultivariateLoss <: Loss
 
 ## generic implementation of univariate loss functions
 
-function loss_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
+function value_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
                         g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
 
     u = predict(pred, θ, x)
@@ -19,7 +19,7 @@ function loss_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
     return v
 end
 
-function loss_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
+function value_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
                         g::DenseVector, θ::DenseVector, X::DenseMatrix, Y::DenseVector)
 
     u = predict(pred, θ, X)

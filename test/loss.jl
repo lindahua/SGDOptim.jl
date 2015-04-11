@@ -17,7 +17,7 @@ function verify_loss_and_grad(loss::UnivariateLoss, fun, θ::Vector, x::Vector, 
     u = dot(θ, x)
     fd = fun(dual(u, 1.0), y)
     g = zeros(length(θ))
-    v = SGDOptim.loss_and_grad!(LinearPredictor(), loss, g, θ, x, y)
+    v = SGDOptim.value_and_grad!(LinearPredictor(), loss, g, θ, x, y)
     @test_approx_eq real(fd) v
     @test_approx_eq epsilon(fd) * x g
 end
@@ -26,7 +26,7 @@ function verify_loss_and_grads(loss::UnivariateLoss, fun, θ::Vector, X::Matrix,
     n = size(X, 2)
     U = X'θ
     g = zeros(length(θ))
-    v = SGDOptim.loss_and_grad!(LinearPredictor(), loss, g, θ, X, Y)
+    v = SGDOptim.value_and_grad!(LinearPredictor(), loss, g, θ, X, Y)
 
     rv = 0.0
     rg = zeros(length(θ))
