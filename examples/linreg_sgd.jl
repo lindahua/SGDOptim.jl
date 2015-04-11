@@ -1,6 +1,6 @@
 # use SGD for linear regression
 
-using SGD
+using SGDOptim
 
 function risk(θ::Vector{Float64}, X::Matrix{Float64}, y::Vector{Float64})
     0.5 * sumabs2(X'θ - y) / size(X, 2)
@@ -17,10 +17,10 @@ function linreg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
     θ_0 = zeros(d)
 
     # optimize
-    θ = sgd(sqrloss!, θ_0,
+    θ = sgd(sqrloss, θ_0,
         minibatch_seq(X, y, 10),        # configure the way data are supplied
         lrate = t->1.0 / (100.0 + t),   # learing rate policy
-        cbctrl=ByInterval(5),           # how frequently callback is invoked
+        cbinterval=5,                   # how frequently callback is invoked
         callback=gtcompare_trace(θ_g))  # the callback function
 
     # compare solution with initial guess

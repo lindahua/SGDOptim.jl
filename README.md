@@ -27,7 +27,7 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 θ_0 = zeros(d)
 
 # optimize
-θ = sgd(sqrloss!, θ_0,
+θ = sgd(sqrloss, θ_0,
     minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
     lrate=t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
     cbinterval=5,             # invoke the callback every 5 iterations
@@ -58,7 +58,7 @@ Here, we call the ``sgd`` function, which implements the standard SGD algorithm.
 
 ### Loss Functions
 
-Here, we use ``sqrloss!`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
+Here, we use ``sqrloss`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
 
 - [x] Squared loss
 - [ ] Hinge loss

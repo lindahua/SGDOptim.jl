@@ -2,7 +2,7 @@ module SGDOptim
 
 using ArrayViews
 
-import Base: start, next, done, call
+import Base: start, next, done
 import Base.LinAlg: axpy!
 
 export
@@ -17,11 +17,12 @@ export
     Loss,
     ScalarLoss,
     MultinomialLoss,
+    value_and_grad!,
     value_and_deriv,
 
-    SqrLoss, sqrloss!,
-    HingeLoss, hingeloss!,
-    LogisticLoss, logisticloss!,
+    SqrLoss, sqrloss,
+    HingeLoss, hingeloss,
+    LogisticLoss, logisticloss,
 
     # callback.jl
     CallbackControl,

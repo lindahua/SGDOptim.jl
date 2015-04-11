@@ -9,7 +9,7 @@ abstract MultinomialLoss <: Loss
 
 ## generic implementation of scalar loss
 
-function call(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
+function value_and_grad!(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
     u = dot(θ, x)
     v, dv = value_and_deriv(f, u, y)
     dv == 0.0 ? fill!(g, 0) :
@@ -18,7 +18,7 @@ function call(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y:
     return v
 end
 
-function call(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
+function value_and_grad!(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
     u = x'θ
     v = 0.0
     for i = 1:length(u)
@@ -38,7 +38,7 @@ end
 type SqrLoss <: ScalarLoss
 end
 
-sqrloss! = SqrLoss()
+sqrloss = SqrLoss()
 
 _half(x::Real) = 0.5 * x
 _half(x::Float32) = 0.5f0 * x
@@ -54,7 +54,7 @@ value_and_deriv(::SqrLoss, u::Real, y::Real) = (r = u - y; v = _half(abs2(r)); (
 type HingeLoss <: ScalarLoss
 end
 
-hingeloss! = HingeLoss()
+hingeloss = HingeLoss()
 
 function value_and_deriv(::HingeLoss, u::Real, y::Real)
     yu = oftype(u, y) * u
@@ -69,7 +69,7 @@ end
 type LogisticLoss <: ScalarLoss
 end
 
-logisticloss! = LogisticLoss()
+logisticloss = LogisticLoss()
 
 function value_and_deriv(::LogisticLoss, u::Real, y::Real)
     y_ = oftype(u, y)

@@ -1,10 +1,10 @@
 # Standard implementation of SGD
 
-function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
+function sgd!{T<:FloatingPoint}(loss::ScalarLoss,
                                 θ::DenseVector{T},
                                 stream::SampleStream,
                                 lrate,
-                                cbctrl,
+                                cbinterval::Int,
                                 callback)
 
     # preparing storage
@@ -17,12 +17,11 @@ function sgd!{T<:FloatingPoint}(loss!::ScalarLoss,
         t += 1
         n = length(inds)
 
-        v = loss!(g, θ, s...)
+        v = value_and_grad!(loss, g, θ, s...)
         λ = convert(T, lrate(t))::T
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
 
-        cbctrl = check(cbctrl)
-        if isready(cbctrl)
+        if cbinterval > 0 && t % cbinterval == 0
             callback(θ, t, n, v)
         end
     end
@@ -36,8 +35,8 @@ function sgd{T<:FloatingPoint}(loss!::ScalarLoss,
                                θ::DenseVector{T},
                                stream::SampleStream;
                                lrate=t->1.0 / t,
-                               cbctrl=NoCallback(),
+                               cbinterval::Int = 0,
                                callback=simple_trace)
 
-    sgd!(loss!, copy(θ), stream, lrate, cbctrl, callback)
+    sgd!(loss!, copy(θ), stream, lrate, cbinterval, callback)
 end
