@@ -1,6 +1,7 @@
 # Standard implementation of SGD
 
-function sgd!{T<:FloatingPoint}(loss::UnivariateLoss,
+function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
+                                loss::UnivariateLoss,
                                 θ::DenseVector{T},
                                 stream::SampleStream,
                                 lrate,
@@ -17,7 +18,7 @@ function sgd!{T<:FloatingPoint}(loss::UnivariateLoss,
         t += 1
         n = length(inds)
 
-        v = value_and_grad!(loss, g, θ, s...)
+        v = loss_and_grad!(pred, loss, g, θ, s...)
         λ = convert(T, lrate(t))::T
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
 
@@ -31,12 +32,13 @@ function sgd!{T<:FloatingPoint}(loss::UnivariateLoss,
 end
 
 
-function sgd{T<:FloatingPoint}(loss!::UnivariateLoss,
+function sgd{T<:FloatingPoint}(pred::UnivariatePredictor,
+                               loss::UnivariateLoss,
                                θ::DenseVector{T},
                                stream::SampleStream;
                                lrate=t->1.0 / t,
                                cbinterval::Int = 0,
                                callback=simple_trace)
 
-    sgd!(loss!, copy(θ), stream, lrate, cbinterval, callback)
+    sgd!(pred, loss, copy(θ), stream, lrate, cbinterval, callback)
 end

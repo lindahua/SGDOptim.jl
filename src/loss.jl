@@ -8,26 +8,28 @@ abstract MultinomialLoss <: Loss
 abstract MultivariateLoss <: Loss
 
 
-## generic implementation of scalar loss
+## generic implementation of univariate loss functions
 
-function value_and_grad!(f::UnivariateLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
-    u = dot(θ, x)
-    v, dv = value_and_deriv(f, u, y)
-    dv == 0.0 ? fill!(g, 0) :
-    dv == 1.0 ? copy!(g, x) :
-                scale!(g, dv, x)
+function loss_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
+                        g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
+
+    u = predict(pred, θ, x)
+    v, dv = value_and_deriv(loss, u, y)
+    scaled_grad!(pred, g, dv, θ, x)
     return v
 end
 
-function value_and_grad!(f::UnivariateLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
-    u = x'θ
+function loss_and_grad!(pred::UnivariatePredictor, loss::UnivariateLoss,
+                        g::DenseVector, θ::DenseVector, X::DenseMatrix, Y::DenseVector)
+
+    u = predict(pred, θ, X)
     v = 0.0
     for i = 1:length(u)
-        vi, dvi = value_and_deriv(f, u[i], y[i])
+        vi, dvi = value_and_deriv(loss, u[i], Y[i])
         v += vi
         u[i] = dvi
     end
-    A_mul_B!(g, x, u)
+    scaled_grad!(pred, g, u, θ, X)
     return v
 end
 

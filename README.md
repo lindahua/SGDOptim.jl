@@ -27,7 +27,7 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 θ_0 = zeros(d)
 
 # optimize
-θ = sgd(sqrloss, θ_0,
+θ = sgd(linear_predictor, sqrloss, θ_0,
     minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
     lrate=t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
     cbinterval=5,             # invoke the callback every 5 iterations
@@ -54,6 +54,16 @@ Here, we call the ``sgd`` function, which implements the standard SGD algorithm.
 - [ ] Hogwild!
 - [ ] Parallel Alternate Direction Methods of Multipliers (ADMM)
 - [ ] ADMM with Variable Splitting
+
+
+### Predictors
+
+Here, we use ``linear_predictor`` to indicate the use of the predicting function as ``(θ, x) -> θ'x``. The package provides a set of commonly used predictors:
+
+- [x] Linear predictor
+- [ ] Affine predictor, *i.e.* linear predictor with a bias term
+- [ ] Multivariate linear predictor
+- [ ] Multivariate affine predictor
 
 
 ### Loss Functions

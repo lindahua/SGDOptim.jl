@@ -13,20 +13,20 @@ function verify_value_and_deriv(loss::UnivariateLoss, fun, us::AbstractVector{Fl
     end
 end
 
-function verify_value_and_grad(loss::UnivariateLoss, fun, θ::Vector, x::Vector, y::Real)
+function verify_loss_and_grad(loss::UnivariateLoss, fun, θ::Vector, x::Vector, y::Real)
     u = dot(θ, x)
     fd = fun(dual(u, 1.0), y)
     g = zeros(length(θ))
-    v = value_and_grad!(loss, g, θ, x, y)
+    v = loss_and_grad!(linear_predictor, loss, g, θ, x, y)
     @test_approx_eq real(fd) v
     @test_approx_eq epsilon(fd) * x g
 end
 
-function verify_values_and_grads(loss::UnivariateLoss, fun, θ::Vector, X::Matrix, Y::Vector)
+function verify_loss_and_grads(loss::UnivariateLoss, fun, θ::Vector, X::Matrix, Y::Vector)
     n = size(X, 2)
     U = X'θ
     g = zeros(length(θ))
-    v = value_and_grad!(loss, g, θ, X, Y)
+    v = loss_and_grad!(linear_predictor, loss, g, θ, X, Y)
 
     rv = 0.0
     rg = zeros(length(θ))
@@ -43,20 +43,7 @@ function verify_values_and_grads(loss::UnivariateLoss, fun, θ::Vector, X::Matri
 end
 
 
-function safe_loss_and_grad(loss::UnivariateLoss, θ::Vector, X::Matrix, y::Vector)
-    n = size(X, 2)
-    v = 0.0
-    g = zeros(size(X,1))
-    gi = zeros(size(X,1))
-    for i = 1:n
-        vi = value_and_grad!(loss, gi, θ, X[:,i], y[i])
-        v += vi
-        g += gi
-    end
-    return (v, g)
-end
-
-
+# data
 
 θ = [1.0, 2.0, 3.0]
 x = [0.4, 0.3, 0.2]   # θ'x = 1.6
@@ -71,12 +58,12 @@ _sqrf(u::Dual, y) = 0.5 * abs2(u - y)
 
 verify_value_and_deriv(sqrloss, _sqrf, -3.0:0.25:3.0, [0.0, 1.0, -2.0])
 
-verify_value_and_grad(sqrloss, _sqrf, θ, x, 1.3)
-verify_value_and_grad(sqrloss, _sqrf, θ, -x, -1.2)
+verify_loss_and_grad(sqrloss, _sqrf, θ, x, 1.3)
+verify_loss_and_grad(sqrloss, _sqrf, θ, -x, -1.2)
 
 X = randn(length(θ), n)
 Y = X'θ + 0.3 * randn(n)
-verify_values_and_grads(sqrloss, _sqrf, θ, X, Y)
+verify_loss_and_grads(sqrloss, _sqrf, θ, X, Y)
 
 
 # Hinge loss
@@ -85,13 +72,13 @@ _hingef(u::Dual, y) = y * real(u) < 1.0 ? 1.0 - y * u : dual(0.0, 0.0)
 
 verify_value_and_deriv(hingeloss, _hingef, -2.0:0.25:2.0, [-1.0, 1.0])
 
-verify_value_and_grad(hingeloss, _hingef, θ, x, 1)
-verify_value_and_grad(hingeloss, _hingef, θ, 0.5x, 1)
-verify_value_and_grad(hingeloss, _hingef, θ, x, -1)
+verify_loss_and_grad(hingeloss, _hingef, θ, x, 1)
+verify_loss_and_grad(hingeloss, _hingef, θ, 0.5x, 1)
+verify_loss_and_grad(hingeloss, _hingef, θ, x, -1)
 
 X = randn(length(θ), n)
 Y = sign(X'θ + 0.5 * randn(n))
-verify_values_and_grads(hingeloss, _hingef, θ, X, Y)
+verify_loss_and_grads(hingeloss, _hingef, θ, X, Y)
 
 
 # Logistic loss
@@ -100,10 +87,10 @@ _logisf(u::Dual, y) = log(1.0 + exp(-y * u))
 
 verify_value_and_deriv(logisticloss, _logisf, -3.0:0.25:3.0, [-1.0, -0.5, 0.5, 1.0])
 
-verify_value_and_grad(logisticloss, _logisf, θ, x, 1)
-verify_value_and_grad(logisticloss, _logisf, θ, x, -1)
-verify_value_and_grad(logisticloss, _logisf, θ, -x, 0.5)
+verify_loss_and_grad(logisticloss, _logisf, θ, x, 1)
+verify_loss_and_grad(logisticloss, _logisf, θ, x, -1)
+verify_loss_and_grad(logisticloss, _logisf, θ, -x, 0.5)
 
 X = randn(length(θ), n)
 Y = 2.0 * rand(n) - 1.0
-verify_values_and_grads(logisticloss, _logisf, θ, X, Y)
+verify_loss_and_grads(logisticloss, _logisf, θ, X, Y)

@@ -14,11 +14,18 @@ export
     sample_seq,
     minibatch_seq,
 
+    # predictors.jl
+    Predictor,
+    UnivariatePredictor,
+    MultivariatePredictor,
+
+    LinearPredictor, linear_predictor,
+
     # loss.jl
     Loss,
     UnivariateLoss,
     MultinomialLoss,
-    value_and_grad!,
+    loss_and_grad!,
     value_and_deriv,
 
     SqrLoss, sqrloss,

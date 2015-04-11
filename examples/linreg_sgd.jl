@@ -17,7 +17,7 @@ function linreg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
     θ_0 = zeros(d)
 
     # optimize
-    θ = sgd(sqrloss, θ_0,
+    θ = sgd(linear_predictor, sqrloss, θ_0,
         minibatch_seq(X, y, 10),        # configure the way data are supplied
         lrate = t->1.0 / (100.0 + t),   # learing rate policy
         cbinterval=5,                   # how frequently callback is invoked
