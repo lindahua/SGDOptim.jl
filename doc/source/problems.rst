@@ -65,7 +65,7 @@ The following methods are provided for each predictor type. Let ``pred`` be a pr
   **Note:** this function is mainly used by the internal of the optimization algorithms.
 
 
-The package already provides several commonly used predictors:
+The package already provides several commonly used predictors as follows. Users can also implement customized predictors by creating subtypes of ``Predictor`` and implementing the methods above.
 
 
 Linear predictor
@@ -151,3 +151,105 @@ In the package, a multivariate affine predictor is represented by the type ``MvA
 
 
 **Note:** In the context of classification, one should *directly* use the value(s) yielded by the linear or affine predictors as arguments to the loss function (*e.g.* *logistic loss* or *multinomial logistic loss*), without converting them into class labels.
+
+
+Loss Functions
+----------------
+
+All loss functions in the package are organized with the following type hierarchy:
+
+.. code-block:: julia
+
+  abstract Loss
+
+  abstract UnivariateLoss <: Loss       # for univariate predictions
+  abstract MultivariateLoss <: Loss     # for multivariate predictions
+
+
+Methods
+~~~~~~~~
+
+All *univariate* loss functions should implement the following methods:
+
+.. function:: value_and_deriv(loss, u, y)
+
+  Compute both the loss value and the derivative *w.r.t.* the prediction and return them as a pair, given both the prediction ``u`` and expected output ``y``.
+
+All *multivariate* loss functions should implement the following methods:
+
+.. function:: value_and_deriv!(loss, u, y)
+
+  Compute both the loss value and the derivatives *w.r.t.* the vector-valued predictions, given both the predicted vector ``u`` and the expected output ``y``. It returns the loss value, and overrides ``u`` with the partial derivatives.
+
+
+This package already provides a few commonly used loss functions. One can implement customized loss functions by creating subtypes of ``Loss`` and providing the required methods as above.
+
+
+Squared loss
+~~~~~~~~~~~~~~
+
+The *squared loss*, as defined below, is usually used in linear regression or curve fitting problems:
+
+.. math::
+
+    loss(u, y) = \frac{1}{2} (u - y)^2
+
+It is represented by the type ``SqrLoss``, as:
+
+.. code-block:: julia
+
+  type SqrLoss <: UnivariateLoss
+  end
+
+
+Hinge loss
+~~~~~~~~~~~
+
+The *hinge loss*, as defined below, is usually used for large-margin classification, *e.g.* SVM:
+
+.. math::
+
+    loss(u, y) = \max(1 - y \cdot u, 0)
+
+It is represented by the type ``HingeLoss``, as:
+
+.. code-block:: julia
+
+  type HingeLoss <: UnivariateLoss
+  end
+
+
+Logisitc loss
+~~~~~~~~~~~~~~~
+
+The *logistic loss*, as defined below, is usually used for logistic regression:
+
+.. math::
+
+    loss(u, y) = \log(1 + \exp(-y \cdot u))
+
+It is represented by the type ``LogisticLoss``, as:
+
+.. code-block:: julia
+
+  type LogisticLoss <: UnivariateLoss
+  end
+
+
+Multinomial Logistic loss
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *multinomial logistic loss*, as defined below, is usually used for multinomial logistic regression (this is often used in the context of multi-way classification):
+
+.. math::
+
+    loss(u, y) = \log\left(\sum_{i=1}^k e^{u_i} \right) - u_y, \ \ u \in \mathbb{R}^k, \ y \in {1, \ldots, k}
+
+Here, ``k`` is the number of classes. This loss function should be used with a ``k``-dimensional multivariate predictor.
+
+It is represented by the type ``MultiLogisticLoss``, as:
+
+.. code:: julia
+
+  type MultiLogisticLoss <: MultivariateLoss
+  end
