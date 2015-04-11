@@ -1,24 +1,27 @@
-# Logistic regression
+# Multinomial Logistic regression
 
 using SGDOptim
+using ArrayViews
 
-function error_rate(θ::Vector{Float64}, X::Matrix{Float64}, y::Vector{Float64})
-    u = X'θ
-    countnz(sign(u) .!= sign(y)) / length(y)
+function error_rate(θ::Matrix{Float64}, X::Matrix{Float64}, y::Vector{Int})
+    u = θ'X
+    r = Int[indmax(view(u,:,i)) for i = 1:size(X,2)]
+    countnz(r .!= y) / length(y)
 end
 
-function logireg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
+function mnlogireg_sgd(θ_g::Matrix{Float64}, n::Int, σ::Float64)
 
     # prepare experimental data
-    d = length(θ_g)
+    d, k = size(θ_g)
     X = randn(d, n)
-    y = sign(vec(θ_g'X) + σ * randn(n))
+    u = θ_g'X + σ * randn(k, n)
+    y = Int[indmax(view(u,:,i)) for i = 1:n]
 
     # initialize solution
-    θ_0 = randn(d)
+    θ_0 = randn(d, k)
 
     # optimize
-    θ = sgd(LinearPredictor(), LogisticLoss(), θ_0,
+    θ = sgd(MvLinearPredictor(), MultiLogisticLoss(), θ_0,
         minibatch_seq(X, y, 10),          # configure the way data are supplied
         reg = SqrL2Reg(1.0e-4),           # regularization
         lrate = t->1.0 / (100.0 + t),     # learing rate policy
@@ -32,4 +35,4 @@ function logireg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
     @printf("gTruth   :  error.rate = %5.2f%%\n", error_rate(θ_g, X, y) * 100.0)
 end
 
-logireg_sgd([3.0, 5.0, 2.0], 10000, 0.2)
+mnlogireg_sgd(randn(5, 3), 10000, 0.2)
