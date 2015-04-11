@@ -1,14 +1,12 @@
 # SGDOptim
 
-A Julia package for Gradient Descent and Stochastic Gradient Descent (SGD)
+A Julia package for Stochastic Gradient Descent (SGD) and its variants.
 
 [![Build Status](https://travis-ci.org/lindahua/SGDOptim.jl.svg?branch=master)](https://travis-ci.org/lindahua/SGDOptim.jl)
 
 ---
 
-## Overview
-
-This package aims to provide a rich API as the basis for implementing and testing stochastic gradient descent and its variants, which are among the most widely used techniques for machine learning on large-scale datasets.
+With the advent of *Big Data*, *Stochastic Gradient Descent (SGD)* has become increasingly popular in recent years, especially in machine learning and related areas. This package implements the SGD algorithm and its variants under a generic setting to facilitate the use of SGD in practice.
 
 Here is an example that illustrates how this package can be used to solve a regression problem:
 
@@ -32,57 +30,52 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 θ = sgd(sqrloss!, θ_0,
     minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
     lrate=t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
-    cbctrl=ByInterval(5),     # invoke the callback every 5 iteration
+    cbinterval=5,             # invoke the callback every 5 iterations
     callback=simple_trace     # callback: print the optimization trace when invoked
 )
 
 ```
 
-From this example, we can see that an SGD optimization procedure involves multiple aspects:
-
-- The optimization algorithm: ``sgd`` indicates the use of the standard SGD. The package also provides other algorithms.
-
-- The loss function: ``sqrloss!`` is a functor, which indicates that we use *squared loss*.
-
-- The data stream.
-
-  **Note:** This package provides various ways to configure the data stream. For example, data can be supplied on a per-sample basis in any given order, or via mini-batches.
-
-- The callback mechanism that enables the interoperability with the world. Particularly, we use an ``cbctrl`` option to control how frequently the callback is invoked, and the ``callback`` option to actually supply the callback.
-
----
-
-## Loss Functions
-
-This package supports the following loss functions, and allows users to provide customized loss functions following a consistent interface.
-
-- [x] Squared loss
-
-  $$\frac{1}{2} (\theta^T x - y)^2$$
-
-- [x] Hinge loss
-
-  $$\max(1 - y \cdot \theta^T x)$$
-
-- [x] Logistic loss
-
-  $$\log(1 + \exp(- y \cdot \theta^T x))$$
+This example shows several aspects involved in an SGD optimization procedure:
 
 
----
+## Optimization Algorithms
 
-## Algorithms
+Here, we call the ``sgd`` function, which implements the standard SGD algorithm. This package provides a variety of algorithms:
 
-This package provides the following algorithms.
-
-#### Stochastic Methods (per-sample or per-mini-batch updates)
+#### For streaming settings
 
 - [x] Stochastic Gradient Descent
 - [ ] Accelerated Stochastic Gradient Descent
 - [ ] Stochastic Proximal Gradient Descent
 
-#### Parallel/Distributed Methods
+#### For distributed settings
 
 - [ ] Hogwild!
 - [ ] Parallel Alternate Direction Methods of Multipliers (ADMM)
 - [ ] ADMM with Variable Splitting
+
+
+## Loss Functions
+
+Here, we use ``sqrloss!`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
+
+- [x] Squared loss
+- [ ] Hinge loss
+- [ ] Logistic loss
+- [ ] Multinomial logistic loss
+- [ ] L1-norm quantile loss
+
+In addition, the package specifies a uniform interface for users to implement and use their customized loss functions.
+
+## Learning Rate
+
+The setting of the *learning rate* has significant impact on the algorithm's behavior. This package allows the learning rate setting to be provided as a function on ``t`` as a keyword argument.
+
+The default setting is ``t -> 1.0 / (1.0 + t)``.
+
+## Interoperability
+
+We allow the optimization procedure to interoperate with the rest of the world, through the callback mechanism.
+
+The user can supply a callback function via the ``callback`` keyword argument, which will be invoked as the optimization proceeds. We understand that invoking the callback too frequently may incur considerable overhead in certain situations, and hence provide a ``cbinterval`` option, which allows the user to specify how frequently the callback should be invoked.
