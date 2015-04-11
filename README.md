@@ -39,7 +39,7 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 This example shows several aspects involved in an SGD optimization procedure:
 
 
-## Optimization Algorithms
+### Optimization Algorithms
 
 Here, we call the ``sgd`` function, which implements the standard SGD algorithm. This package provides a variety of algorithms:
 
@@ -56,7 +56,7 @@ Here, we call the ``sgd`` function, which implements the standard SGD algorithm.
 - [ ] ADMM with Variable Splitting
 
 
-## Loss Functions
+### Loss Functions
 
 Here, we use ``sqrloss!`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
 
@@ -68,13 +68,13 @@ Here, we use ``sqrloss!`` to indicate the use of *Squared loss*, which is a popu
 
 In addition, the package specifies a uniform interface for users to implement and use their customized loss functions.
 
-## Learning Rate
+### Learning Rate
 
 The setting of the *learning rate* has significant impact on the algorithm's behavior. This package allows the learning rate setting to be provided as a function on ``t`` as a keyword argument.
 
 The default setting is ``t -> 1.0 / (1.0 + t)``.
 
-## Interoperability
+### Interoperability
 
 We allow the optimization procedure to interoperate with the rest of the world, through the callback mechanism.
 
