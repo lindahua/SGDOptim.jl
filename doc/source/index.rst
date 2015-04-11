@@ -14,4 +14,5 @@ This package provides types and functions for users to construct *(regularized) 
 
    problems.rst
    streams.rst
-   
+   algorithms.rst
+   callbacks.rst
