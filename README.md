@@ -79,3 +79,8 @@ The default setting is ``t -> 1.0 / (1.0 + t)``.
 We allow the optimization procedure to interoperate with the rest of the world, through the callback mechanism.
 
 The user can supply a callback function via the ``callback`` keyword argument, which will be invoked as the optimization proceeds. We understand that invoking the callback too frequently may incur considerable overhead in certain situations, and hence provide a ``cbinterval`` option, which allows the user to specify how frequently the callback should be invoked.
+
+
+## Documentation
+
+For more details, please refer to the [documentation](http://sgdoptimjl.readthedocs.org/en/latest/index.html).
