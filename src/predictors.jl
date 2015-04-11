@@ -86,3 +86,30 @@ function scaled_grad!(pred::AffinePredictor, g::DenseVector, c::DenseVector, θ:
     A_mul_B!(view(g, 1:d), X, c)
     g[d+1] = pred.bias * sum(c)
 end
+
+
+## Multivariate linear predictor
+
+type MvLinearPredictor <: MultivariatePredictor
+end
+
+function nsamples(::MvLinearPredictor, θ::AbstractMatrix, x::AbstractVector, y)
+    length(x) == size(θ, 1) || throw(DimensionMismatch("Incorrect sample dimensions."))
+    return 1
+end
+
+function nsamples(::MvLinearPredictor, θ::AbstractMatrix, x::AbstractMatrix, y::AbstractVecOrMat)
+    size(x, 1) == size(θ, 1) || throw(DimensionMismatch("Incorrect sample dimensions."))
+    n = size(x, 2)
+    size(y, ndims(y)) == n || throw(DimensionMismatch("Inconsistent number of samples."))
+    return n
+end
+
+predict(::MvLinearPredictor, θ::DenseMatrix, x::DenseVector) = θ'x
+predict(::MvLinearPredictor, θ::DenseMatrix, X::DenseMatrix) = θ'X
+
+scaled_grad!(::MvLinearPredictor, g::DenseMatrix, c::DenseVector, θ::DenseMatrix, x::DenseVector) =
+    A_mul_Bt!(g, x, c)
+
+scaled_grad!(::MvLinearPredictor, g::DenseMatrix, c::DenseMatrix, θ::DenseMatrix, X::DenseMatrix) =
+    A_mul_Bt!(g, X, c)

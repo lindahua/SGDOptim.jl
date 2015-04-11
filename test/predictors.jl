@@ -8,13 +8,12 @@ function _predgrad(pred::Predictor, c, θ, x)
     return g
 end
 
+## Linear predictor
 
 θ = [3.0, 4.0, 6.0]
 x = randn(3)
 X = randn(3, 5)
 c = rand(size(X, 2))
-
-## Linear predictor
 
 pred = LinearPredictor()
 
@@ -43,3 +42,29 @@ pred = AffinePredictor(b)
 
 @test_approx_eq [2.0x; 2.0b] _predgrad(pred, 2.0, θa, x)
 @test_approx_eq [X * c; b * sum(c)] _predgrad(pred, c, θa, X)
+
+## Multivariate predictor
+
+d = 5
+k = 3
+n = 8
+
+θ = randn(d, k)
+x = randn(d)
+X = randn(d, n)
+c = rand(k)
+C = rand(k, n)
+
+pred = MvLinearPredictor()
+
+@test nsamples(pred, θ, x, 0) == 1
+@test nsamples(pred, θ, x, zeros(k)) == 1
+@test nsamples(pred, θ, X, zeros(Int, n)) == n
+@test nsamples(pred, θ, X, zeros(k, n)) == n
+
+@test_approx_eq θ'x predict(pred, θ, x)
+@test_approx_eq θ'X predict(pred, θ, X)
+@test_approx_eq x * (c') _predgrad(pred, c, θ, x)
+@test_approx_eq X * (C') _predgrad(pred, C, θ, X)
+
+ 

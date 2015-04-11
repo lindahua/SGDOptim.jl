@@ -23,6 +23,7 @@ export
 
     LinearPredictor,
     AffinePredictor,
+    MvLinearPredictor,
 
     # loss.jl
     Loss,
