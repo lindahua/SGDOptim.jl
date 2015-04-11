@@ -20,12 +20,16 @@ The package provides functions that implement SGD and its variants.
      name             default                 description
     ================ ====================== ===================================================
      ``reg``          ``NoReg()``            The regularizer.
+
      ``lrate``        ``t->1.0/(1.0 + t)``   The rule of learning rate, which should be
                                              a function of the iteration number ``t``.
+
      ``cbinterval``   ``0``                  The interval of invoking callback.
+
                                              - ``0``: never invoke callback.
                                              - ``1``: invoke callback at each iteration.
                                              - ``k``: invoke callback every ``k`` iterations.
+                                             
      ``callback``     ``simple_trace``       The callback function.
                                              (See :ref:`callback` for details).
     ================ ====================== ===================================================
