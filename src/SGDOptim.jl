@@ -1,5 +1,6 @@
 module SGDOptim
 
+using Compat
 using ArrayViews
 
 import Base: start, next, done
