@@ -13,3 +13,5 @@ This package provides types and functions for users to construct *(regularized) 
    :maxdepth: 2
 
    problems.rst
+   streams.rst
+   
