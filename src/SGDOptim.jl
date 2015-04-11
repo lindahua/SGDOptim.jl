@@ -20,16 +20,16 @@ export
     MultivariatePredictor,
     predict,
 
-    LinearPredictor, linear_predictor,
+    LinearPredictor,
 
     # loss.jl
     Loss,
     UnivariateLoss,
     MultinomialLoss,
 
-    SqrLoss, sqrloss,
-    HingeLoss, hingeloss,
-    LogisticLoss, logisticloss,
+    SqrLoss,
+    HingeLoss,
+    LogisticLoss,
 
     # regularizers.jl
     Regularizer,

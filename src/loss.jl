@@ -41,8 +41,6 @@ end
 type SqrLoss <: UnivariateLoss
 end
 
-sqrloss = SqrLoss()
-
 _half(x::Real) = 0.5 * x
 _half(x::Float32) = 0.5f0 * x
 _half(x::Float64) = 0.5 * x
@@ -57,8 +55,6 @@ value_and_deriv(::SqrLoss, u::Real, y::Real) = (r = u - y; v = _half(abs2(r)); (
 type HingeLoss <: UnivariateLoss
 end
 
-hingeloss = HingeLoss()
-
 function value_and_deriv(::HingeLoss, u::Real, y::Real)
     yu = oftype(u, y) * u
     yu >= one(u) ? (zero(u), zero(u)) : (one(u) - yu, oftype(u, -y))
@@ -71,8 +67,6 @@ end
 #
 type LogisticLoss <: UnivariateLoss
 end
-
-logisticloss = LogisticLoss()
 
 function value_and_deriv(::LogisticLoss, u::Real, y::Real)
     y_ = oftype(u, y)

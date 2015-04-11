@@ -7,8 +7,6 @@ abstract MultivariatePredictor <: Predictor
 type LinearPredictor <: UnivariatePredictor
 end
 
-linear_predictor = LinearPredictor()
-
 nsamples(::LinearPredictor, x::DenseVecOrMat) = size(x, 2)
 
 predict(::LinearPredictor, θ::DenseVector, x::DenseVector) = dot(θ, x)

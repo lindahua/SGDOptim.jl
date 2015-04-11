@@ -27,7 +27,7 @@ y   = vec(θ_g'X) + σ * randn(n)  # responses
 θ_0 = zeros(d)
 
 # optimize
-θ = sgd(linear_predictor, sqrloss, θ_0,
+θ = sgd(LinearPredictor(), SqrLoss(), θ_0,
     minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
     reg = SqrL2Reg(0.01),          # regularization
     lrate = t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
@@ -59,7 +59,7 @@ Here, we call the ``sgd`` function, which implements the standard SGD algorithm.
 
 ### Predictors
 
-Here, we use ``linear_predictor`` to indicate the use of the predicting function as ``(θ, x) -> θ'x``. The package provides a set of commonly used predictors:
+Here, we use ``LinearPredictor`` to indicate the use of the predicting function as ``(θ, x) -> θ'x``. The package provides a set of commonly used predictors:
 
 - [x] Linear predictor
 - [ ] Affine predictor, *i.e.* linear predictor with a bias term
@@ -69,7 +69,7 @@ Here, we use ``linear_predictor`` to indicate the use of the predicting function
 
 ### Loss Functions
 
-Here, we use ``sqrloss`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
+Here, we use ``SqrLoss`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
 
 - [x] Squared loss
 - [ ] Hinge loss
