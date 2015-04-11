@@ -45,7 +45,7 @@ function sgd{T<:FloatingPoint}(pred::UnivariatePredictor,
                                θ::DenseVector{T},
                                stream::SampleStream;
                                reg::Regularizer=NoReg(),
-                               lrate=t->1.0 / t,
+                               lrate=t->1.0 / (1.0 + t),
                                cbinterval::Int = 0,
                                callback=simple_trace)
 
