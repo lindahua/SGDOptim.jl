@@ -15,6 +15,7 @@ function value_and_grad!(pred::Predictor,
     return v
 end
 
+# Standard SGD: implementation
 function sgd!{T<:FloatingPoint}(pred::Predictor, loss::Loss, reg::Regularizer,
                                 θ::DenseVecOrMat{T}, stream::SampleStream,
                                 lrate, cbinterval::Int, callback)
@@ -46,7 +47,7 @@ function sgd!{T<:FloatingPoint}(pred::Predictor, loss::Loss, reg::Regularizer,
     return θ
 end
 
-
+# Standard SGD: facet
 function sgd{T<:FloatingPoint}(pred::Predictor,
                                loss::Loss,
                                θ::DenseVecOrMat{T},
