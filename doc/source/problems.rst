@@ -17,7 +17,7 @@ Predictors
 
 All predictors in this package are organized with the following type hierarchy:
 
-.. code:: julia
+.. code-block:: julia
 
   abstract Predictor
 
@@ -79,7 +79,7 @@ A *linear predictor* is a real-valued linear functional :math:`f: \mathbb{R}^d \
 
 In the package, a linear predictor is represented by the type ``LinearPredictor``:
 
-.. code:: julia
+.. code-block:: julia
 
   type LinearPredictor <: UnivariatePredictor
   end
@@ -98,7 +98,7 @@ Note that the parameter :math:`\theta` is an ``d+1``-dimensional vector, which s
 
 In the package, an affine predictor is represented by the type ``AffinePredictor``:
 
-.. code:: julia
+.. code-block:: julia
 
   type AffinePredictor{T<:FloatingPoint} <: UnivariatePredictor
       bias::T
@@ -121,7 +121,7 @@ The parameter :math:`\theta` is a matrix of size ``(d, q)``.
 
 In the package, a multivariate linear predictor is represented by the type ``MvLinearPredictor``:
 
-.. code:: julia
+.. code-block:: julia
 
   type MvLinearPredictor <: MultivariatePredictor
   end
@@ -140,7 +140,7 @@ The parameter :math:`theta` is a matrix of size ``(d+1, q)``.
 
 In the package, a multivariate affine predictor is represented by the type ``MvAffinePredictor``:
 
-.. code:: julia
+.. code-block:: julia
 
   type MvAffinePredictor{T<:FloatingPoint} <: MultivariatePredictor
       bias::T
@@ -249,7 +249,95 @@ Here, ``k`` is the number of classes. This loss function should be used with a `
 
 It is represented by the type ``MultiLogisticLoss``, as:
 
-.. code:: julia
+.. code-block:: julia
 
   type MultiLogisticLoss <: MultivariateLoss
   end
+
+
+Regularizers
+-------------
+
+*Regularization* is important. Using *regularization* can ensures numerical stability and often improves the generalization performance of a model. In this package, regularization is done through *regularizers*, which can be understood as functionals that yield a cost value given a parameter.
+
+Methods
+~~~~~~~~
+
+All *regularizers* are subtypes of an abstract type ``Regularizer``, and should implement the following methods:
+
+.. function:: value_and_addgrad!(reg, g, theta)
+
+  Compute the regularization value and the gradient at the parameter ``theta``. It returns the regularization value and writes the gradient to a pre-allocated array ``g``.
+
+  The size of ``g`` should be equal to that of ``theta``.
+
+
+The package provides some commonly used regularizers.
+
+No regularization
+~~~~~~~~~~~~~~~~~~~
+
+In certain cases, *e.g.* with a large sample set, people may choose to *not* use regularization. We provide a type ``NoReg``, defined below, to indicate no regularization.
+
+type NoReg <: Regularizer
+end
+
+In SGD algorithms, if no regularizer is explicitly specified, ``NoReg()`` will be used by default.
+
+
+Squared L2 norm
+~~~~~~~~~~~~~~~~
+
+The *squared L2 norm regularizer* is defined as
+
+.. math::
+
+    r(\theta) = \frac{c}{2} \|\theta\|_2^2
+
+It is represented by the type ``SqrL2Reg``, as:
+
+.. code-block:: julia
+
+  type SqrL2Reg <: Regularizer
+      coef::Float64
+  end
+
+L1 norm
+~~~~~~~~~
+
+The *L1 norm regularizer* is defined as
+
+.. math::
+
+  r(\theta) = c |\theta|_1
+
+It is represented by the type ``L1Reg``, as:
+
+.. code-block:: julia
+
+  type L1Reg <: Regularizer
+      coef::Float64
+  end
+
+This regularizer is often used for sparse learning, *e.g.* *LASSO*.
+
+
+Elastic regularizer
+~~~~~~~~~~~~~~~~~~~~
+
+The *elastic regularizer* is defined as a combination of L1 norm and squared L2 norm, as:
+
+.. math::
+
+    r(\theta) = c_1 \|\theta_1\|_1 + c_2 \|\theta_2\|_2^2
+
+It is represented by the type ``ElasticReg``, as:
+
+.. code-block:: julia
+
+  type ElasticReg <: Regularizer
+      coef1::Float64
+      coef2::Float64
+  end
+
+This is the regularizer used in the well-known algorithm *Elastic Net*.
