@@ -2,7 +2,7 @@ using SGDOptim
 using Base.Test
 using DualNumbers
 
-function verify_value_and_deriv(loss::ScalarLoss, fun, us::AbstractVector{Float64}, ys::AbstractVector{Float64})
+function verify_value_and_deriv(loss::UnivariateLoss, fun, us::AbstractVector{Float64}, ys::AbstractVector{Float64})
     for y in ys
         for u in us
             v, dv = value_and_deriv(loss, u, y)
@@ -13,7 +13,7 @@ function verify_value_and_deriv(loss::ScalarLoss, fun, us::AbstractVector{Float6
     end
 end
 
-function verify_value_and_grad(loss::ScalarLoss, fun, θ::Vector, x::Vector, y::Real)
+function verify_value_and_grad(loss::UnivariateLoss, fun, θ::Vector, x::Vector, y::Real)
     u = dot(θ, x)
     fd = fun(dual(u, 1.0), y)
     g = zeros(length(θ))
@@ -22,7 +22,7 @@ function verify_value_and_grad(loss::ScalarLoss, fun, θ::Vector, x::Vector, y::
     @test_approx_eq epsilon(fd) * x g
 end
 
-function verify_values_and_grads(loss::ScalarLoss, fun, θ::Vector, X::Matrix, Y::Vector)
+function verify_values_and_grads(loss::UnivariateLoss, fun, θ::Vector, X::Matrix, Y::Vector)
     n = size(X, 2)
     U = X'θ
     g = zeros(length(θ))
@@ -43,7 +43,7 @@ function verify_values_and_grads(loss::ScalarLoss, fun, θ::Vector, X::Matrix, Y
 end
 
 
-function safe_loss_and_grad(loss::ScalarLoss, θ::Vector, X::Matrix, y::Vector)
+function safe_loss_and_grad(loss::UnivariateLoss, θ::Vector, X::Matrix, y::Vector)
     n = size(X, 2)
     v = 0.0
     g = zeros(size(X,1))

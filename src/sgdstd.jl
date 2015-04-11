@@ -1,6 +1,6 @@
 # Standard implementation of SGD
 
-function sgd!{T<:FloatingPoint}(loss::ScalarLoss,
+function sgd!{T<:FloatingPoint}(loss::UnivariateLoss,
                                 θ::DenseVector{T},
                                 stream::SampleStream,
                                 lrate,
@@ -31,7 +31,7 @@ function sgd!{T<:FloatingPoint}(loss::ScalarLoss,
 end
 
 
-function sgd{T<:FloatingPoint}(loss!::ScalarLoss,
+function sgd{T<:FloatingPoint}(loss!::UnivariateLoss,
                                θ::DenseVector{T},
                                stream::SampleStream;
                                lrate=t->1.0 / t,

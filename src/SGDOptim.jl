@@ -16,7 +16,7 @@ export
 
     # loss.jl
     Loss,
-    ScalarLoss,
+    UnivariateLoss,
     MultinomialLoss,
     value_and_grad!,
     value_and_deriv,
@@ -37,7 +37,11 @@ export
     sgd!,
     sgd
 
+
+# source files
+
 include("streams.jl")
+include("predictors.jl")
 include("loss.jl")
 include("callback.jl")
 

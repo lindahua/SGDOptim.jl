@@ -3,13 +3,14 @@
 # AbstractLoss subsumes all kinds of loss functions
 abstract Loss
 
-abstract ScalarLoss <: Loss
+abstract UnivariateLoss <: Loss
 abstract MultinomialLoss <: Loss
+abstract MultivariateLoss <: Loss
 
 
 ## generic implementation of scalar loss
 
-function value_and_grad!(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
+function value_and_grad!(f::UnivariateLoss, g::DenseVector, θ::DenseVector, x::DenseVector, y::Real)
     u = dot(θ, x)
     v, dv = value_and_deriv(f, u, y)
     dv == 0.0 ? fill!(g, 0) :
@@ -18,7 +19,7 @@ function value_and_grad!(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::Dens
     return v
 end
 
-function value_and_grad!(f::ScalarLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
+function value_and_grad!(f::UnivariateLoss, g::DenseVector, θ::DenseVector, x::DenseMatrix, y::DenseVector)
     u = x'θ
     v = 0.0
     for i = 1:length(u)
@@ -35,7 +36,7 @@ end
 #
 #   loss(θ, x, y) := (1/2) * (θ'x - y)^2
 #
-type SqrLoss <: ScalarLoss
+type SqrLoss <: UnivariateLoss
 end
 
 sqrloss = SqrLoss()
@@ -51,7 +52,7 @@ value_and_deriv(::SqrLoss, u::Real, y::Real) = (r = u - y; v = _half(abs2(r)); (
 #
 #   loss(θ, x, y) := max(1 - y * θ'x, 0)
 #
-type HingeLoss <: ScalarLoss
+type HingeLoss <: UnivariateLoss
 end
 
 hingeloss = HingeLoss()
@@ -66,7 +67,7 @@ end
 #
 #   loss(θ, x, y) := log(1 + exp(-y * θ'x))
 #
-type LogisticLoss <: ScalarLoss
+type LogisticLoss <: UnivariateLoss
 end
 
 logisticloss = LogisticLoss()
