@@ -1,6 +1,6 @@
 
-Welcome to SGDOptim's documentation!
-====================================
+Welcome to SGDOptim
+=====================
 
 *SGDOptim* is a Julia package for `Stochastic Gradient Descent (SGD) <http://en.wikipedia.org/wiki/Stochastic_gradient_descent>`_, which has become increasingly popular in solving machine learning problems, especially in the context where large-scale datasets are involved.
 
