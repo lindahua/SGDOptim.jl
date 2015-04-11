@@ -9,9 +9,13 @@ abstract MultivariatePredictor <: Predictor
 type LinearPredictor <: UnivariatePredictor
 end
 
-nsamples(::LinearPredictor, x::AbstractVector, y::Number) = 1
+function nsamples(::LinearPredictor, θ::AbstractVector, x::AbstractVector, y::Number)
+    length(x) == length(θ) || throw(DimensionMismatch("Incorrect sample dimensions."))
+    return 1
+end
 
-function nsamples(::LinearPredictor, x::AbstractMatrix, y::AbstractVector)
+function nsamples(::LinearPredictor, θ::AbstractVector, x::AbstractMatrix, y::AbstractVector)
+    size(x, 1) == length(θ) || throw(DimensionMismatch("Incorrect sample dimensions."))
     n = size(x, 2)
     length(y) == n || throw(DimensionMismatch("Inconsistent number of samples."))
     return n
