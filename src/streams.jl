@@ -35,7 +35,7 @@ function next(str::GenericSampleSeq, s)
     i, s = next(str.ord, s)
     x = gets(str.xs, i)
     y = gets(str.ys, i)
-    return (i, (x, y)), s
+    return (x, y), s
 end
 
 

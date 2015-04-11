@@ -17,7 +17,7 @@ ss = collect(sample_seq(X, y, ord))
 @test length(ss) == k
 for i = 1:k
     j = ord[i]
-    @test ss[i] == (j, (X[:,j], y[j]))
+    @test ss[i] == (X[:,j], y[j])
 end
 
 # case 2: both X and Y are matrices
@@ -30,7 +30,7 @@ ss = collect(sample_seq(X, Y, ord))
 @test length(ss) == k
 for i = 1:k
     j = ord[i]
-    @test ss[i] == (j, (X[:, j], Y[:, j]))
+    @test ss[i] == (X[:, j], Y[:, j])
 end
 
 # case 3: mini-batches in natural order
@@ -47,7 +47,7 @@ ss = collect(minibatch_seq(X, y, 3))
 @test length(ss) == length(bs)
 for i = 1:length(bs)
     b = bs[i]
-    @test ss[i] == (b, (X[:, b], y[b]))
+    @test ss[i] == (X[:, b], y[b])
 end
 
 ord = [4, 2, 3, 1, 2]
@@ -56,5 +56,5 @@ ss = collect(minibatch_seq(X, y, 3, ord))
 @test length(ss) == length(ord)
 for i = 1:length(ord)
     b = bs[ord[i]]
-    @test ss[i] == (b, (X[:, b], y[b]))
+    @test ss[i] == (X[:, b], y[b])
 end

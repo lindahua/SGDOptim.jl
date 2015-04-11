@@ -4,10 +4,18 @@ abstract Predictor
 abstract UnivariatePredictor <: Predictor
 abstract MultivariatePredictor <: Predictor
 
+## Linear predictor
+
 type LinearPredictor <: UnivariatePredictor
 end
 
-nsamples(::LinearPredictor, x::DenseVecOrMat) = size(x, 2)
+nsamples(::LinearPredictor, x::AbstractVector, y::Number) = 1
+
+function nsamples(::LinearPredictor, x::AbstractMatrix, y::AbstractVector)
+    n = size(x, 2)
+    length(y) == n || throw(DimensionMismatch("Inconsistent number of samples."))
+    return n
+end
 
 predict(::LinearPredictor, θ::DenseVector, x::DenseVector) = dot(θ, x)
 predict(::LinearPredictor, θ::DenseVector, X::DenseMatrix) = X'θ

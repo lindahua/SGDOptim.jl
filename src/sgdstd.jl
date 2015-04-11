@@ -15,9 +15,9 @@ function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
 
     # main loop
     t = 0
-    for (inds, s) in stream
+    for s in stream
         t += 1
-        n = length(inds)
+        n = nsamples(pred, s...)
 
         # for loss
         v = loss_and_grad!(pred, loss, g, θ, s...)
