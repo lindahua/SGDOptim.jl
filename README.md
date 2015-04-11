@@ -43,13 +43,13 @@ This example shows several aspects involved in an SGD optimization procedure:
 
 Here, we call the ``sgd`` function, which implements the standard SGD algorithm. This package provides a variety of algorithms:
 
-#### For streaming settings
+**For streaming settings:**
 
 - [x] Stochastic Gradient Descent
 - [ ] Accelerated Stochastic Gradient Descent
 - [ ] Stochastic Proximal Gradient Descent
 
-#### For distributed settings
+**For distributed settings:**
 
 - [ ] Hogwild!
 - [ ] Parallel Alternate Direction Methods of Multipliers (ADMM)
