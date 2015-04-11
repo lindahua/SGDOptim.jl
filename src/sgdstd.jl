@@ -1,13 +1,23 @@
 # Standard implementation of SGD
 
-function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
-                                loss::UnivariateLoss,
-                                reg::Regularizer,
-                                θ::DenseVector{T},
-                                stream::SampleStream,
-                                lrate,
-                                cbinterval::Int,
-                                callback)
+# compute the objective value with both loss and regularization
+# and also compute the gradient (writing to g)
+#
+function value_and_grad!(pred::Predictor,
+                         loss::Loss,
+                         reg::Regularizer,
+                         g::AbstractArray,
+                         θ::AbstractArray,
+                         s)
+
+    v = value_and_grad!(pred, loss, g, θ, s...)
+    v += value_and_addgrad!(reg, g, θ)
+    return v
+end
+
+function sgd!{T<:FloatingPoint}(pred::Predictor, loss::Loss, reg::Regularizer,
+                                θ::DenseVecOrMat{T}, stream::SampleStream,
+                                lrate, cbinterval::Int, callback)
 
     # preparing storage
     g = similar(θ)
@@ -19,11 +29,8 @@ function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
         t += 1
         n = nsamples(pred, θ, s...)
 
-        # for loss
-        v = value_and_grad!(pred, loss, g, θ, s...)
-
-        # for regularizer
-        v += value_and_addgrad!(reg, g, θ)
+        # evaluate objective and gradient
+        v = value_and_grad!(pred, loss, reg, g, θ, s)
 
         # update
         λ = convert(T, lrate(t))::T
@@ -40,9 +47,9 @@ function sgd!{T<:FloatingPoint}(pred::UnivariatePredictor,
 end
 
 
-function sgd{T<:FloatingPoint}(pred::UnivariatePredictor,
-                               loss::UnivariateLoss,
-                               θ::DenseVector{T},
+function sgd{T<:FloatingPoint}(pred::Predictor,
+                               loss::Loss,
+                               θ::DenseVecOrMat{T},
                                stream::SampleStream;
                                reg::Regularizer=NoReg(),
                                lrate=default_lrate,
