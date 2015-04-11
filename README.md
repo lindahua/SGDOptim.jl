@@ -8,41 +8,53 @@ A Julia package for Stochastic Gradient Descent (SGD) and its variants.
 
 With the advent of *Big Data*, *Stochastic Gradient Descent (SGD)* has become increasingly popular in recent years, especially in machine learning and related areas. This package implements the SGD algorithm and its variants under a generic setting to facilitate the use of SGD in practice.
 
-Here is an example that illustrates how this package can be used to solve a regression problem:
+Here is an [example](http://nbviewer.ipython.org/github/lindahua/SGDOptim.jl/blob/master/example.ipynb) that demonstrates the use of this package in solving a ridge regression problem.
 
-```julia
 
-# prepare experimental data
+## Overview
 
-# let d be the sample dimension
-#     n be the number of samples
-#     σ be the standard deviation of the measurement noise
+Generally, SGD optimization is a problem that involves multiple aspects:
 
-# prepare experimental data
-θ_g = rand(d)                    # underlying parameter
-X   = rand(d, n)                 # features
-y   = vec(θ_g'X) + σ * randn(n)  # responses
+- Optimization problem: predictor, loss function, and regularizer
+- Optimization algorithm
+- Data: sample sequence or mini-batch?
+- Interoperability with the world (*e.g.* monitor the progress)
 
-# initialize solution
-θ_0 = zeros(d)
+Below is an overview of what we provide in this package:
 
-# optimize
-θ = sgd(LinearPredictor(), SqrLoss(), θ_0,
-    minibatch_seq(X, y, 10),     # a stream of mini-batches of size 10
-    reg = SqrL2Reg(0.01),          # regularization
-    lrate = t->1.0 / (100.0 + t),  # configure the policy to compute learning rate
-    cbinterval = 5,                # invoke the callback every 5 iterations
-    callback = simple_trace        # callback: print the optimization trace when invoked
-)
 
-```
+### Optimization Problem
 
-This example shows several aspects involved in an SGD optimization procedure:
+A regularized risk minimization problem is generally comprised of three parts:
+
+**Predictor:**
+
+- [x] Linear predictor
+- [x] Affine predictor, *i.e.* linear predictor with a bias term
+- [ ] Multivariate linear predictor
+- [ ] Multivariate affine predictor
+
+**Loss function:**
+
+- [x] Squared loss
+- [x] Hinge loss
+- [x] Logistic loss
+- [ ] Multinomial logistic loss
+- [ ] L1-norm quantile loss
+
+**Regularizer:**
+
+- [x] No regularization
+- [x] Squared L2-norm
+- [x] L1-norm (*e.g.* LASSO)
+- [x] Elastic Net
+- [ ] Grouped LASSO
+- [ ] Fused LASSO
 
 
 ### Optimization Algorithms
 
-Here, we call the ``sgd`` function, which implements the standard SGD algorithm. This package provides a variety of algorithms:
+We provide a variety of algorithms, including SGD and its variants, and you may choose one that is suitable for your need:
 
 **For streaming settings:**
 
@@ -56,46 +68,12 @@ Here, we call the ``sgd`` function, which implements the standard SGD algorithm.
 - [ ] Parallel Alternate Direction Methods of Multipliers (ADMM)
 - [ ] ADMM with Variable Splitting
 
-
-### Predictors
-
-Here, we use ``LinearPredictor`` to indicate the use of the predicting function as ``(θ, x) -> θ'x``. The package provides a set of commonly used predictors:
-
-- [x] Linear predictor
-- [x] Affine predictor, *i.e.* linear predictor with a bias term
-- [ ] Multivariate linear predictor
-- [ ] Multivariate affine predictor
-
-
-### Loss Functions
-
-Here, we use ``SqrLoss`` to indicate the use of *Squared loss*, which is a popular choice for linear regression. This package provides a collection of loss functions:
-
-- [x] Squared loss
-- [x] Hinge loss
-- [x] Logistic loss
-- [ ] Multinomial logistic loss
-- [ ] L1-norm quantile loss
-
-In addition, the package specifies a uniform interface for users to implement and use their customized loss functions.
-
-### Regularization
-
-Regularization is important in ensuring the numerical stability and generalized performance of the estimated model. Here, we use ``SqrL2Reg`` to indicate the use of *squared L2-norm regularizer*. This package provides a set of regularizers:
-
-- [x] No regularization
-- [x] Squared L2-norm
-- [x] L1-norm (*e.g.* LASSO)
-- [x] Elastic Net
-- [ ] Grouped LASSO
-- [ ] Fused LASSO
-
-
-### Learning Rate
+**Learning rate:**
 
 The setting of the *learning rate* has significant impact on the algorithm's behavior. This package allows the learning rate setting to be provided as a function on ``t`` as a keyword argument.
 
 The default setting is ``t -> 1.0 / (1.0 + t)``.
+
 
 ### Interoperability
 
