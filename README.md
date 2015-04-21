@@ -98,12 +98,12 @@ Generally, a *callback* is an arbitrary function (or closure) that can be called
 callback(theta, t, n, v)
 ```
 
-  | params  | descriptions |
-  | ------- | ------------ |
-  | `theta` | The current solution. |
-  | `t`     | The number of elapsed iterations. |
-  | `n`     | The number of samples that have been used. |
-  | `v`     | The objective value of the last item, which can be an objective evaluated on a single             sample or the total objective value evaluated on the last batch of samples. |
+| params  | descriptions |
+| ------- | ------------ |
+| `theta` | The current solution. |
+| `t`     | The number of elapsed iterations. |
+| `n`     | The number of samples that have been used. |
+| `v`     | The objective value of the last item, which can be an objective evaluated on a single sample or the total objective value evaluated on the last batch of samples. |
 
 The package already provides some callbacks for simple use:
 
