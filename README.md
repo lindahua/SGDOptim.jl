@@ -41,15 +41,18 @@ The default setting is ``t -> 1.0 / (1.0 + t)``.
 
   Performs stochastic gradient descent to solve a (regularized) risk minimization problem.
 
+  |  params   |  descriptions |
+  | --------- | ------------- |
   | `rmodel`  | the risk model, which can be constructed using `riskmodel` method.  |
-  | --------- | ------------------------------------------------------------------- |
   | `theta`   | The initial guess of the model parameter. |
   | `stream`  | The input data stream. |
 
   This function also accepts keyword arguments:
 
-  | `reg` | the regularizer (default = `ZeroReg()`, means no regularization). |
-  | `lrate` | the learning rate rule, which should be a function of `t` (default as mentioned above). |
+  | params       | descriptions |
+  | ------------ | ------------ |
+  | `reg`        | the regularizer (default = `ZeroReg()`, means no regularization). |
+  | `lrate`      | the learning rate rule, which should be a function of `t` (default as mentioned above). |
   | `cbinterval` | the interval of invoking the callback, *i.e.* the function invokes the callback every `cbinterval` iterations. (default is `0`, meaning that it never invokes the callback). |
 
 
