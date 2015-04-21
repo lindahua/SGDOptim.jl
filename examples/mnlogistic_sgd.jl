@@ -3,25 +3,28 @@
 using SGDOptim
 using ArrayViews
 
-function error_rate(θ::Matrix{Float64}, X::Matrix{Float64}, y::Vector{Int})
-    u = θ'X
+function error_rate(W::Matrix{Float64}, X::Matrix{Float64}, y::Vector{Int})
+    u = W * X
     r = Int[indmax(view(u,:,i)) for i = 1:size(X,2)]
     countnz(r .!= y) / length(y)
 end
 
-function mnlogireg_sgd(θ_g::Matrix{Float64}, n::Int, σ::Float64)
+function mnlogireg_sgd(Wg::Matrix{Float64}, n::Int, σ::Float64)
 
     # prepare experimental data
-    d, k = size(θ_g)
+    k, d = size(Wg)
     X = randn(d, n)
-    u = θ_g'X + σ * randn(k, n)
+    u = Wg * X + σ * randn(k, n)
     y = Int[indmax(view(u,:,i)) for i = 1:n]
 
+    # construct the risk model
+    rmodel = riskmodel(MvLinearPred(d, k), MultiLogisticLoss())
+
     # initialize solution
-    θ_0 = randn(d, k)
+    W0 = randn(k, d)
 
     # optimize
-    θ = sgd(MvLinearPredictor(), MultiLogisticLoss(), θ_0,
+    W = sgd(rmodel, W0,
         minibatch_seq(X, y, 10),          # configure the way data are supplied
         reg = SqrL2Reg(1.0e-4),           # regularization
         lrate = t->1.0 / (100.0 + t),     # learing rate policy
@@ -30,9 +33,9 @@ function mnlogireg_sgd(θ_g::Matrix{Float64}, n::Int, σ::Float64)
 
     # compare solution with initial guess
     println()
-    @printf("Initial  :  error.rate = %5.2f%%\n", error_rate(θ_0, X, y) * 100.0)
-    @printf("Solution :  error.rate = %5.2f%%\n", error_rate(θ,   X, y) * 100.0)
-    @printf("gTruth   :  error.rate = %5.2f%%\n", error_rate(θ_g, X, y) * 100.0)
+    @printf("Initial  :  error.rate = %5.2f%%\n", error_rate(W0, X, y) * 100.0)
+    @printf("Solution :  error.rate = %5.2f%%\n", error_rate(W,  X, y) * 100.0)
+    @printf("gTruth   :  error.rate = %5.2f%%\n", error_rate(Wg, X, y) * 100.0)
 end
 
-mnlogireg_sgd(randn(5, 3), 10000, 0.2)
+mnlogireg_sgd(randn(3, 5), 10000, 0.2)

@@ -1,8 +1,5 @@
 tests = [
-    "streams",
-    "predictors",
-    "loss",
-    "regularizers"
+    "streams"
 ]
 
 

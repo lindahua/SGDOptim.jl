@@ -11,50 +11,11 @@ With the advent of *Big Data*, *Stochastic Gradient Descent (SGD)* has become in
 Here is an [example](http://nbviewer.ipython.org/github/lindahua/SGDOptim.jl/blob/master/example.ipynb) that demonstrates the use of this package in solving a ridge regression problem.
 
 
-## Overview
-
-Generally, SGD optimization is a problem that involves multiple aspects:
-
-- Optimization problem: predictor, loss function, and regularizer
-- Optimization algorithm
-- Data: sample sequence or mini-batch?
-- Interoperability with the world (*e.g.* monitor the progress)
-
-Below is an overview of what we provide in this package:
-
-
-### Optimization Problem
-
-A regularized risk minimization problem is generally comprised of three parts:
-
-**Predictor:**
-
-- [x] Linear predictor
-- [x] Affine predictor, *i.e.* linear predictor with a bias term
-- [x] Multivariate linear predictor
-- [x] Multivariate affine predictor
-
-**Loss function:**
-
-- [x] Squared loss
-- [x] Hinge loss
-- [x] Logistic loss
-- [x] Multinomial logistic loss
-- [ ] L1-norm quantile loss
-
-**Regularizer:**
-
-- [x] No regularization
-- [x] Squared L2-norm
-- [x] L1-norm (*e.g.* LASSO)
-- [x] Elastic Net
-- [ ] Grouped LASSO
-- [ ] Fused LASSO
-
-
 ### Optimization Algorithms
 
-We provide a variety of algorithms, including SGD and its variants, and you may choose one that is suitable for your need:
+This package depends on [EmpiricalRisks.jl](https://github.com/lindahua/EmpiricalRisks.jl), which provides the basic components, including *predictors*, *loss functions*, and *regularizers*.
+
+On top of that, we provide a variety of algorithms, including SGD and its variants, and you may choose one that is suitable for your need:
 
 **For streaming settings:**
 
@@ -74,13 +35,27 @@ The setting of the *learning rate* has significant impact on the algorithm's beh
 The default setting is ``t -> 1.0 / (1.0 + t)``.
 
 
+### Key Functions
+
+- **sgd**(rmodel, theta, stream; ...)
+
+  Performs stochastic gradient descent to solve a (regularized) risk minimization problem.
+
+  | `rmodel`  | the risk model, which can be constructed using `riskmodel` method.  |
+  | --------- | ------------------------------------------------------------------- |
+  | `theta`   | The initial guess of the model parameter. |
+  | `stream`  | The input data stream. |
+
+  This function also accepts keyword arguments:
+
+  | `reg` | the regularizer (default = `ZeroReg()`, means no regularization). |
+  | `lrate` | the learning rate rule, which should be a function of `t` (default as mentioned above). |
+  | `cbinterval` | the interval of invoking the callback, *i.e.* the function invokes the callback every `cbinterval` iterations. (default is `0`, meaning that it never invokes the callback). |
+
+
+
 ### Interoperability
 
 We allow the optimization procedure to interoperate with the rest of the world, through the callback mechanism.
 
 The user can supply a callback function via the ``callback`` keyword argument, which will be invoked as the optimization proceeds. We understand that invoking the callback too frequently may incur considerable overhead in certain situations, and hence provide a ``cbinterval`` option, which allows the user to specify how frequently the callback should be invoked.
-
-
-## Documentation
-
-For more details, please refer to the [documentation](http://sgdoptimjl.readthedocs.org/en/latest/index.html).

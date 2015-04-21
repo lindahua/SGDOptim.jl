@@ -2,11 +2,6 @@
 
 using SGDOptim
 
-function risk(pred, θ::Vector{Float64}, X::Matrix{Float64}, y::Vector{Float64})
-    u = predict(pred, θ, X)
-    0.5 * sumabs2(u - y) / size(X, 2)
-end
-
 function linreg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
 
     # prepare experimental data
@@ -18,8 +13,9 @@ function linreg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
     θ_0 = zeros(d + 1)
 
     # optimize
-    pred = AffinePredictor()
-    θ = sgd(pred, SqrLoss(), θ_0,
+    rmodel = riskmodel(AffinePred(d), SqrLoss())
+
+    θ = sgd(rmodel, θ_0,
         minibatch_seq(X, y, 10),          # configure the way data are supplied
         reg = SqrL2Reg(1.0e-4),           # regularization
         lrate = t->1.0 / (100.0 + t),     # learing rate policy
@@ -28,10 +24,10 @@ function linreg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
 
     # compare solution with initial guess
     println()
-    @printf("Initial:  deviation = %.4e | risk = %.4e\n",
-        vecnorm(θ_0 - θ_g), risk(pred, θ_0, X, y))
-    @printf("Solution: deviation = %.4e | risk = %.4e\n",
-        vecnorm(θ - θ_g), risk(pred, θ, X, y))
+    @printf("Initial:  deviation = %.4e | avg.risk = %.4e\n",
+        vecnorm(θ_0 - θ_g), value(rmodel, θ_0, X, y) / n)
+    @printf("Solution: deviation = %.4e | avg.risk = %.4e\n",
+        vecnorm(θ - θ_g), value(rmodel, θ, X, y) / n)
 end
 
 linreg_sgd([3.0, 5.0, 2.0], 10000, 0.1)
