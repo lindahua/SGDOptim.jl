@@ -1,13 +1,5 @@
 # Standard implementation of SGD
 
-function value_and_grad!{T<:FloatingPoint}(rmodel::RiskModel, g::StridedArray{T}, θ::StridedArray{T}, x, y)
-    v_risk, _ = value_and_addgrad!(rmodel, 0, g, 1, θ, x, y)
-    v_regr, _ = value_and_addgrad!(rmodel, 1, g, 1, θ, x, y)
-    return v_risk + v_regr
-end
-
-
-
 # Standard SGD: implementation
 function sgd!{T<:FloatingPoint}(rmodel::SupervisedRiskModel, reg::Regularizer,
                                 θ::StridedArray{T}, stream::SampleStream,
@@ -25,7 +17,7 @@ function sgd!{T<:FloatingPoint}(rmodel::SupervisedRiskModel, reg::Regularizer,
         n = ninputs(pm, x)
 
         # evaluate objective and gradient
-        v = value_and_grad!(rmodel, g, θ, x, y)
+        v, _ = value_and_grad!(rmodel, reg, g, θ, x, y)
 
         # update
         λ = convert(T, lrate(t))
