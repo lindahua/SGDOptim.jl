@@ -1,47 +1,22 @@
 module SGDOptim
 
 using Compat
+using Reexport
 using ArrayViews
+@reexport using EmpiricalRisks
 
 import Base: start, next, done
 import Base.LinAlg: axpy!
 
 export
+    # from ArrayViews
+    views,
 
     # streams.jl
     SampleStream,
     GenericSampleSeq,
     sample_seq,
     minibatch_seq,
-
-    # predictors.jl
-    Predictor,
-    UnivariatePredictor,
-    MultivariatePredictor,
-    predict,
-    nsamples,
-
-    LinearPredictor,
-    AffinePredictor,
-    MvLinearPredictor,
-    MvAffinePredictor,
-
-    # loss.jl
-    Loss,
-    UnivariateLoss,
-    MultivariateLoss,
-
-    SqrLoss,
-    HingeLoss,
-    LogisticLoss,
-    MultiLogisticLoss,
-
-    # regularizers.jl
-    Regularizer,
-    NoReg,
-    SqrL2Reg,
-    L1Reg,
-    ElasticReg,
 
     # callback.jl
     simple_trace,
@@ -56,9 +31,6 @@ export
 
 include("utils.jl")
 include("streams.jl")
-include("predictors.jl")
-include("loss.jl")
-include("regularizers.jl")
 include("callback.jl")
 
 include("sgdstd.jl")

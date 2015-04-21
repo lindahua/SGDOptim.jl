@@ -14,11 +14,14 @@ function logireg_sgd(θ_g::Vector{Float64}, n::Int, σ::Float64)
     X = randn(d, n)
     y = sign(vec(θ_g'X) + σ * randn(n))
 
+    # construct the risk model
+    rmodel = riskmodel(LinearPred(d), LogisticLoss())
+
     # initialize solution
     θ_0 = randn(d)
 
     # optimize
-    θ = sgd(LinearPredictor(), LogisticLoss(), θ_0,
+    θ = sgd(rmodel, θ_0,
         minibatch_seq(X, y, 10),          # configure the way data are supplied
         reg = SqrL2Reg(1.0e-4),           # regularization
         lrate = t->1.0 / (100.0 + t),     # learing rate policy

@@ -1,23 +1,16 @@
 # Standard implementation of SGD
 
-# compute the objective value with both loss and regularization
-# and also compute the gradient (writing to g)
-#
-function value_and_grad!(pred::Predictor,
-                         loss::Loss,
-                         reg::Regularizer,
-                         g::AbstractArray,
-                         θ::AbstractArray,
-                         s)
-
-    v = value_and_grad!(pred, loss, g, θ, s...)
-    v += value_and_addgrad!(reg, g, θ)
-    return v
+function value_and_grad!{T<:FloatingPoint}(rmodel::RiskModel, g::StridedArray{T}, θ::StridedArray{T}, x, y)
+    v_risk, _ = value_and_addgrad!(rmodel, 0, g, 1, θ, x, y)
+    v_regr, _ = value_and_addgrad!(rmodel, 1, g, 1, θ, x, y)
+    return v_risk + v_regr
 end
 
+
+
 # Standard SGD: implementation
-function sgd!{T<:FloatingPoint}(pred::Predictor, loss::Loss, reg::Regularizer,
-                                θ::DenseVecOrMat{T}, stream::SampleStream,
+function sgd!{T<:FloatingPoint}(rmodel::SupervisedRiskModel, reg::Regularizer,
+                                θ::StridedArray{T}, stream::SampleStream,
                                 lrate, cbinterval::Int, callback)
 
     # preparing storage
@@ -25,16 +18,17 @@ function sgd!{T<:FloatingPoint}(pred::Predictor, loss::Loss, reg::Regularizer,
     tloss = 0.0
 
     # main loop
+    pm = rmodel.predmodel
     t = 0
-    for s in stream
+    for (x, y) in stream
         t += 1
-        n = nsamples(pred, θ, s...)
+        n = ninputs(pm, x)
 
         # evaluate objective and gradient
-        v = value_and_grad!(pred, loss, reg, g, θ, s)
+        v = value_and_grad!(rmodel, g, θ, x, y)
 
         # update
-        λ = convert(T, lrate(t))::T
+        λ = convert(T, lrate(t))
         axpy!(-λ, g, θ)  # θ <- θ - λ * g
 
         # callback
@@ -48,14 +42,13 @@ function sgd!{T<:FloatingPoint}(pred::Predictor, loss::Loss, reg::Regularizer,
 end
 
 # Standard SGD: facet
-function sgd{T<:FloatingPoint}(pred::Predictor,
-                               loss::Loss,
-                               θ::DenseVecOrMat{T},
+function sgd{T<:FloatingPoint}(rmodel::SupervisedRiskModel,
+                               θ::StridedArray{T},
                                stream::SampleStream;
-                               reg::Regularizer=NoReg(),
+                               reg::Regularizer=ZeroReg(),
                                lrate=default_lrate,
                                cbinterval::Int = 0,
                                callback=simple_trace)
 
-    sgd!(pred, loss, reg, copy(θ), stream, lrate, cbinterval, callback)
+    sgd!(rmodel, reg, copy(θ), stream, lrate, cbinterval, callback)
 end
