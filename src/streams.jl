@@ -45,8 +45,9 @@ function sample_seq(X::DenseVecOrMat, Y::DenseVecOrMat, ord)
     GenericSampleSeq{typeof(X), typeof(Y), typeof(ord)}(X, Y, ord)
 end
 
-sample_seq(X::DenseVecOrMat, Y::DenseVecOrMat) = GenericSampleSeq(X, Y, 1:size(X, ndims(X)))
-
+function sample_seq(X::DenseVecOrMat, Y::DenseVecOrMat)
+    sample_seq(X,Y,1:size(X, ndims(X)))
+end
 
 # mini-batch sequences
 
