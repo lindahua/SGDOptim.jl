@@ -1,7 +1,7 @@
 # Standard implementation of SGD
 
 # Standard SGD: implementation
-function sgd!{T<:FloatingPoint}(rmodel::SupervisedRiskModel, reg::Regularizer,
+function sgd!{T<:AbstractFloat}(rmodel::SupervisedRiskModel, reg::Regularizer,
                                 θ::StridedArray{T}, stream::SampleStream,
                                 lrate, cbinterval::Int, callback)
 
@@ -34,7 +34,7 @@ function sgd!{T<:FloatingPoint}(rmodel::SupervisedRiskModel, reg::Regularizer,
 end
 
 # Standard SGD: facet
-function sgd{T<:FloatingPoint}(rmodel::SupervisedRiskModel,
+function sgd{T<:AbstractFloat}(rmodel::SupervisedRiskModel,
                                θ::StridedArray{T},
                                stream::SampleStream;
                                reg::Regularizer=ZeroReg(),
